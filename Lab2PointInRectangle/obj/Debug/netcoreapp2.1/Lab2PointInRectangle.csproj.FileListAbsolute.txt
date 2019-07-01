@@ -1,0 +1,11 @@
+C:\Users\HP\Documents\2019\C#OOP\WorkingWithAbstarction\Lab2PointInRectangle\bin\Debug\netcoreapp2.1\Lab2PointInRectangle.deps.json
+C:\Users\HP\Documents\2019\C#OOP\WorkingWithAbstarction\Lab2PointInRectangle\bin\Debug\netcoreapp2.1\Lab2PointInRectangle.runtimeconfig.json
+C:\Users\HP\Documents\2019\C#OOP\WorkingWithAbstarction\Lab2PointInRectangle\bin\Debug\netcoreapp2.1\Lab2PointInRectangle.runtimeconfig.dev.json
+C:\Users\HP\Documents\2019\C#OOP\WorkingWithAbstarction\Lab2PointInRectangle\bin\Debug\netcoreapp2.1\Lab2PointInRectangle.dll
+C:\Users\HP\Documents\2019\C#OOP\WorkingWithAbstarction\Lab2PointInRectangle\bin\Debug\netcoreapp2.1\Lab2PointInRectangle.pdb
+C:\Users\HP\Documents\2019\C#OOP\WorkingWithAbstarction\Lab2PointInRectangle\obj\Debug\netcoreapp2.1\Lab2PointInRectangle.csprojAssemblyReference.cache
+C:\Users\HP\Documents\2019\C#OOP\WorkingWithAbstarction\Lab2PointInRectangle\obj\Debug\netcoreapp2.1\Lab2PointInRectangle.csproj.CoreCompileInputs.cache
+C:\Users\HP\Documents\2019\C#OOP\WorkingWithAbstarction\Lab2PointInRectangle\obj\Debug\netcoreapp2.1\Lab2PointInRectangle.AssemblyInfoInputs.cache
+C:\Users\HP\Documents\2019\C#OOP\WorkingWithAbstarction\Lab2PointInRectangle\obj\Debug\netcoreapp2.1\Lab2PointInRectangle.AssemblyInfo.cs
+C:\Users\HP\Documents\2019\C#OOP\WorkingWithAbstarction\Lab2PointInRectangle\obj\Debug\netcoreapp2.1\Lab2PointInRectangle.dll
+C:\Users\HP\Documents\2019\C#OOP\WorkingWithAbstarction\Lab2PointInRectangle\obj\Debug\netcoreapp2.1\Lab2PointInRectangle.pdb

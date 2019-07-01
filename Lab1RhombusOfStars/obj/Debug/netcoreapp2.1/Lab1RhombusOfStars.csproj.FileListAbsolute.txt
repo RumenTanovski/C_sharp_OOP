@@ -1,0 +1,11 @@
+C:\Users\HP\Documents\2019\C#OOP\WorkingWithAbstarction\Lab1RhombusOfStars\bin\Debug\netcoreapp2.1\Lab1RhombusOfStars.deps.json
+C:\Users\HP\Documents\2019\C#OOP\WorkingWithAbstarction\Lab1RhombusOfStars\bin\Debug\netcoreapp2.1\Lab1RhombusOfStars.runtimeconfig.json
+C:\Users\HP\Documents\2019\C#OOP\WorkingWithAbstarction\Lab1RhombusOfStars\bin\Debug\netcoreapp2.1\Lab1RhombusOfStars.runtimeconfig.dev.json
+C:\Users\HP\Documents\2019\C#OOP\WorkingWithAbstarction\Lab1RhombusOfStars\bin\Debug\netcoreapp2.1\Lab1RhombusOfStars.dll
+C:\Users\HP\Documents\2019\C#OOP\WorkingWithAbstarction\Lab1RhombusOfStars\bin\Debug\netcoreapp2.1\Lab1RhombusOfStars.pdb
+C:\Users\HP\Documents\2019\C#OOP\WorkingWithAbstarction\Lab1RhombusOfStars\obj\Debug\netcoreapp2.1\Lab1RhombusOfStars.csprojAssemblyReference.cache
+C:\Users\HP\Documents\2019\C#OOP\WorkingWithAbstarction\Lab1RhombusOfStars\obj\Debug\netcoreapp2.1\Lab1RhombusOfStars.csproj.CoreCompileInputs.cache
+C:\Users\HP\Documents\2019\C#OOP\WorkingWithAbstarction\Lab1RhombusOfStars\obj\Debug\netcoreapp2.1\Lab1RhombusOfStars.AssemblyInfoInputs.cache
+C:\Users\HP\Documents\2019\C#OOP\WorkingWithAbstarction\Lab1RhombusOfStars\obj\Debug\netcoreapp2.1\Lab1RhombusOfStars.AssemblyInfo.cs
+C:\Users\HP\Documents\2019\C#OOP\WorkingWithAbstarction\Lab1RhombusOfStars\obj\Debug\netcoreapp2.1\Lab1RhombusOfStars.dll
+C:\Users\HP\Documents\2019\C#OOP\WorkingWithAbstarction\Lab1RhombusOfStars\obj\Debug\netcoreapp2.1\Lab1RhombusOfStars.pdb
