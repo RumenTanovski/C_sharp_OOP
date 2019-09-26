@@ -1,0 +1,805 @@
+
+
+namespace Farm
+{
+    public class StartUp
+    {
+        public static void Main(string[] args)
+        {
+            Dog dog = new Dog();
+            dog.Bark();
+            dog.Eat();
+        }
+    }
+}
+Lab1 SingelInheritance
+
+using System;
+
+namespace Farm
+
+{
+    public class Animal
+    {
+        public void Eat()
+        {
+            Console.WriteLine("eating...");
+        }
+    }
+}
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Farm
+{
+    public class Dog : Animal
+    {
+        public void Bark()
+        {
+            Console.WriteLine("barking...");
+        }
+    }
+}
+
+Lab 2MultiplayInheritance
+namespace Farm
+{
+    public class StartUp
+    {
+        public static void Main(string[] args)
+        {
+            Puppy puppy = new Puppy();
+            puppy.Eat();
+            puppy.Bark();
+            puppy.Weep();
+        }
+    }
+}
+
+using System;
+namespace Farm
+{
+    public class Animal
+    {
+        public void Eat()
+        {
+            Console.WriteLine("eating...");
+        }
+    }
+}
+
+using System;
+namespace Farm
+{
+    public class Dog : Animal
+    {
+        public void Bark()
+        {
+            Console.WriteLine("barking...");
+        }
+    }
+}
+
+using System;
+namespace Farm
+{
+    class Puppy : Dog
+    {
+        public void Weep()
+        {
+            Console.WriteLine("weeping...");
+        }
+
+    }
+}
+
+
+Lab3 Hierarchical
+
+using System;
+
+namespace Farm
+{
+    public class StartUp
+    {
+        public static void Main(string[] args)
+        {
+            Dog dog = new Dog();
+            dog.Eat();
+            dog.Bark();
+
+            Cat cat = new Cat();
+            cat.Eat();
+            cat.Meow();
+
+        }
+    }
+}
+
+
+using System;
+
+namespace Farm
+{
+    public class Animal
+    {
+        public void Eat()
+        {
+            Console.WriteLine("eating...");
+        }
+    }
+}
+
+using System;
+
+namespace Farm
+{
+    public class Cat : Animal
+    {
+        public void Meow()
+        {
+            Console.WriteLine("meowing...");
+        }
+    }
+}
+
+using System;
+
+namespace Farm
+{
+    public class Dog : Animal
+    {
+        public void Bark()
+        {
+            Console.WriteLine("barking...");
+        }
+    }
+}
+
+Lab4 RandomList
+
+using System;
+
+namespace CustomRandomList
+{
+    public class StartUp
+    {
+        static void Main(string[] args)
+        {
+            //RandomList randomList = new RandomList();
+            //randomList.Add("1");
+            //randomList.Add("2");
+            //randomList.Add("3");
+            //
+            //Console.WriteLine(randomList.RandomString());
+        }
+    }
+}
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace CustomRandomList
+{
+    public class RandomList : List<string>
+    {
+        private Random rand;
+
+        public RandomList()
+        {
+            rand = new Random();
+        }
+
+        public string RandomString()
+        {
+            int index = rand.Next(0, this.Count);
+            string element = this[index];
+            this.RemoveAt(index);
+            return element;
+        }
+    }
+}
+
+Lab5 CustomStack
+
+using System;
+
+namespace CustomStack
+{
+    public class StartUp
+    {
+        public static void Main(string[] args)
+        {
+            
+        }
+    }
+}
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace CustomStack
+{
+    public class StackOfStrings : Stack<string>
+    {        
+        public bool IsEmpty()
+        {            
+                return this.Count==0;            
+        }
+
+        public  void AddRange(Stack<string> strings)
+        {
+            foreach (var str in strings)
+            {
+                this.Push(str);
+            }
+        }
+
+    }
+}
+
+Exe 1 
+using System;
+
+namespace Person
+{
+    public class StartUp
+    {
+        public static void Main(string[] args)
+        {
+            string name = Console.ReadLine();
+            int age = int.Parse(Console.ReadLine());
+
+            Child child = new Child(name, age);
+            Console.WriteLine(child);
+        }
+    }
+}
+
+using System;
+using System.Text;
+
+namespace Person
+{
+    public class Person
+    {       
+        public string name;
+        public int age;
+
+        public Person(string name, int age)
+        {
+            this.Name = name;
+            this.Age = age;
+        }
+
+        public string Name { get; set; }
+        public int Age { get; set; }
+
+        public override string ToString()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.Append(String.Format("Name: {0}, Age: {1}",
+                                 this.Name,
+                                 this.Age));
+
+            return stringBuilder.ToString();
+        }
+
+    }
+}
+
+namespace Person
+{
+    public class Child : Person
+    {
+        public Child(string name,int age):base(name,age)
+        {
+        }
+    }
+}
+
+Exe 2 Zoo				Animal
+			Reptile					Mammal
+		Lizard    Snake			Gorilla  Bear
+
+namespace Zoo
+{
+    public class StartUp
+    {
+        public static void Main(string[] args)
+        {
+        }
+    }
+}
+
+namespace Zoo
+{
+    public class Animal
+    {
+        public Animal(string name)
+        {
+            this.Name = name;
+        }
+
+        public string Name { get; set; }
+    }
+}
+
+namespace Zoo.Reptile
+{
+    public class Reptile:Animal
+    {
+        public Reptile(string name):base(name)
+        {
+        }
+    }
+}
+namespace Zoo.Reptile
+{
+    public class Lizard : Reptile
+    {
+        public Lizard(string name):base(name)
+        {
+        }
+    }
+}
+namespace Zoo.Reptile
+{
+    public class Snake :Reptile
+    {
+        public Snake(string name) : base(name)
+        {
+        }
+    }
+}
+
+
+
+
+namespace Zoo.Mammal
+{
+    public class Mammal :Animal
+    {
+        public Mammal(string name) :base(name)
+        {
+        }
+    }
+}
+namespace Zoo.Mammal
+{
+    public class Gorilla : Mammal
+    {
+        public Gorilla(string name) :base(name)
+        {
+        }
+    }
+}
+namespace Zoo.Mammal
+{
+    public class Bear: Mammal
+    { 
+        public Bear(string name): base (name)
+        {
+        }
+    }
+}
+
+Exe 3 PlayersAndMonsters
+namespace PlayersAndMonsters
+{
+    public class StartUp
+    {
+        public static void Main(string[] args)
+        {
+
+        }
+    }
+}
+
+namespace PlayersAndMonsters
+{
+    public class Hero
+    {
+        public Hero(string userName, int level)
+        {
+            this.UserName = userName;
+            this.Level = level;
+        }
+
+        public string UserName { get; set; }
+        public int Level { get; set; }
+
+        public override string ToString()
+        {
+            return $"Type: {this.GetType().Name} Username: {this.UserName} Level: {this.Level}";
+        }
+    }
+}
+
+
+namespace PlayersAndMonsters.Elf
+{
+    public class Elf :Hero
+    {
+        public Elf(string userName, int level):base(userName,level)
+        {                
+        }
+    }
+}
+namespace PlayersAndMonsters.Elf
+{
+    public class MuseElf:Elf
+    {
+        public MuseElf(string userName, int level): base(userName, level)
+        {
+        }
+    }
+}
+
+
+namespace PlayersAndMonsters.Knight
+{
+    public class Knight:Hero
+    {
+        public Knight(string userName, int level) : base(userName, level)
+        {
+        }
+    }
+}
+namespace PlayersAndMonsters.Knight
+{
+    public class DarkKnight : Knight
+    {
+        public DarkKnight(string userName, int level): base(userName, level)
+        {
+        }
+    }
+}
+namespace PlayersAndMonsters.Knight
+{
+    public class BladeKnight : DarkKnight
+    {
+        public BladeKnight(string userName, int level) : base(userName, level)
+        {
+        }
+    }
+}
+
+
+namespace PlayersAndMonsters.Wizard
+{
+    public class Wizard :Hero
+    {
+        public Wizard(string userName, int level):base(userName,level)
+        {
+        }
+    }
+}
+namespace PlayersAndMonsters.Wizard
+{
+    public class DarkWizard :Wizard
+    {
+        public DarkWizard(string userName, int level) : base(userName, level)
+        {
+        }
+    }
+}
+namespace PlayersAndMonsters.Wizard
+{
+    public class SoulMaster :DarkWizard
+    {
+        public SoulMaster(string userName, int level): base(userName, level)
+        {
+        }
+    }
+}
+
+
+Exe4  Need for Speed
+
+namespace NeedForSpeed
+{
+    public class StartUp
+    {
+        public static void Main(string[] args)
+        {
+            
+        }
+    }
+}
+
+namespace NeedForSpeed
+{
+    public class Vehicle
+    {
+        private const double DEFAULT_FUEL_CONSUMPTION = 1.25;
+
+        public Vehicle(int horsePower, double fuel)
+        {
+            this.HorsePower = horsePower;
+            this.Fuel = fuel;
+        }
+
+        public virtual double FuelConsumption =>
+            DEFAULT_FUEL_CONSUMPTION;
+
+        public double Fuel { get; set; }
+
+        public int HorsePower { get; set; }
+
+        public virtual void Drive (double kilometers)
+        {
+            double fuelNeeded = this.FuelConsumption * kilometers;
+
+            if (this.Fuel>= fuelNeeded)
+            {
+                this.Fuel -= this.FuelConsumption * kilometers;
+            }
+        }
+    }
+}
+
+
+namespace NeedForSpeed.Car
+{
+    public class Car: Vehicle
+    {
+        private const double DEFAULT_FUEL_CONSUMPTION = 3;
+
+        public Car(int horsePower, double fuel) : base(horsePower, fuel)
+        {
+        }
+        public override double FuelConsumption => DEFAULT_FUEL_CONSUMPTION;
+    }
+}
+namespace NeedForSpeed.Car
+{
+    public class FamilyCar :Car
+    {
+        public FamilyCar(int horsePower, double fuel) : base(horsePower, fuel)
+        {
+        }
+    }
+}
+namespace NeedForSpeed.Car
+{
+    class SportCar :Car
+    {
+        private const double DEFAULT_FUEL_CONSUMPTION = 10;
+
+        public SportCar(int horsePower, double fuel) : base(horsePower, fuel)
+        {
+        }
+        public override double FuelConsumption => DEFAULT_FUEL_CONSUMPTION;
+    }
+}
+
+
+namespace NeedForSpeed.Motorcycle
+{
+    public class Motorcycle:Vehicle
+    {
+        public Motorcycle(int horsePower, double fuel):base(horsePower,fuel)
+        {
+        }
+    }
+}
+namespace NeedForSpeed.Motorcycle
+{
+    public class RaceMotorcycle :Motorcycle
+    {
+        private const double DEFAULT_FUEL_CONSUMPTION = 8;
+        public RaceMotorcycle(int horsePower, double fuel):base(horsePower, fuel)
+        {
+        }
+
+        public override double FuelConsumption =>
+            DEFAULT_FUEL_CONSUMPTION;
+    }
+}
+namespace NeedForSpeed.Motorcycle
+{
+    public class CrossMotorcycle :Motorcycle
+    {
+        public CrossMotorcycle(int horsePower, double fuel) : base(horsePower, fuel)
+        {
+        }
+    }
+}
+
+
+
+ Exe   Problem 5. Restaurant
+ 
+ namespace Restaurant
+{
+    public class StartUp
+    {
+        public static void Main(string[] args)
+        {
+
+        }
+    }
+}
+ 
+ namespace Restaurant
+{
+    public class Product
+    {
+        public Product(string name, decimal price)
+        {
+            this.Name = name;
+            this.Price = price;
+        }
+
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+    }
+}
+
+namespace Restaurant.Beverage
+{
+    public class Beverage : Product
+    {
+        public Beverage(string name, decimal price, double milliliters):base(name, price)
+        {
+            this.Milliliters = milliliters;
+        }
+
+        public double Milliliters { get; set; }
+    }
+}
+
+namespace Restaurant.Beverage.ColdBeverage
+{
+    public class ColdBeverage :Beverage
+    {
+        public ColdBeverage(string name, decimal price, double milliliters) : base(name, price, milliliters)
+        {
+        }
+    }
+}
+
+namespace Restaurant.Beverage.HotBeverage
+{
+    public class HotBeverage:Beverage
+    {
+        public HotBeverage(string name, decimal price, double milliliters) : base(name, price, milliliters)
+        {            
+        }
+    }
+}
+namespace Restaurant.Beverage.HotBeverage
+{
+    public class Coffee :HotBeverage
+    {
+        private const decimal COFFE_PRICE = 3.50m;
+        
+        private const double COFFEE_MILLILITERES = 50;
+
+        public Coffee(string name, double caffeine) 
+            : base(name, COFFE_PRICE, COFFEE_MILLILITERES)
+        {
+            this.Caffeine = caffeine;
+        }
+
+        public double Caffeine { get; set; }
+        
+    }
+}
+
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Restaurant.Beverage.HotBeverage
+{
+    public class Tea:HotBeverage
+    {
+        public Tea(string name, decimal price, double milliliters) : base(name, price, milliliters)
+        {
+        }
+    }
+}
+
+
+namespace Restaurant.Food
+{
+    public class Food :Product
+    {
+        public Food(string name, decimal price, double grams)
+            :base(name, price)
+        {
+            this.Grams = grams;
+        }
+
+        public double Grams { get; set; }
+    }
+}
+
+namespace Restaurant.Food.Starter
+{
+    public class Starter: Food
+    {
+        public Starter(string name, decimal price, double grams)
+            : base(name, price, grams)
+        {
+        }
+    }
+}
+namespace Restaurant.Food.Starter
+{
+    public class Soup:Starter
+    {
+        public Soup(string name, decimal price, double grams)
+            : base(name, price, grams)
+        {
+        }
+    }
+}
+
+
+namespace Restaurant.Food.MainDish
+{
+    public class MainDish : Food
+    {
+        public MainDish(string name, decimal price, double grams)
+            : base(name, price, grams)
+        {
+        }
+    }
+}
+namespace Restaurant.Food.MainDish
+{
+    public class Fish:MainDish
+    {
+        private const double GRAMS = 22;
+
+        public Fish(string name, decimal price)
+            : base(name, price, GRAMS)
+        {
+        }
+    }
+}
+
+
+namespace Restaurant.Food.Dessert
+{
+    public class Dessert :Food
+    {
+        public Dessert(string name, decimal price, double grams, double calories)
+            : base(name, price, grams)
+        {
+            this.Calories = calories;
+        }
+        public double Calories { get; set; }
+    }
+}
+namespace Restaurant.Food.Dessert
+{
+    public class Cake : Dessert
+    {
+        private const double GRAMS = 250;
+        private const double CLORIES = 1000;
+        private const decimal CAKE_PRICE= 5M;
+
+        public Cake(string name)
+            : base(name, CAKE_PRICE, GRAMS, CLORIES)
+        {            
+        }
+    }
+}
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
