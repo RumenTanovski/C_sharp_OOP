@@ -1,0 +1,1420 @@
+
+Lab1 Sort Person By Name and Age
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace PersonsInfo
+{
+    public class StartUp
+    {
+        public static void Main(string[] args)
+        {
+            var lines = int.Parse(Console.ReadLine());
+            var persons = new List<Person>();
+            for (int i = 0; i < lines; i++)
+            {
+                var cmdArgs = Console.ReadLine().Split();
+                var person = new Person(cmdArgs[0], cmdArgs[1], int.Parse(cmdArgs[2]));
+                persons.Add(person);
+            }
+
+            persons.OrderBy(p => p.FirstName)
+                   .ThenBy(p => p.Age)
+                   .ToList()
+                   .ForEach(p => Console.WriteLine(p.ToString()));
+        }
+    }
+}
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace PersonsInfo
+{
+    public class Person
+    {
+        public string FirstName { get; private set; }
+
+        public string LastName { get; private set; }
+
+        public int Age { get; private set; }
+
+        public Person(string firstName, string lastName, int age)
+        {
+            this.FirstName = firstName;
+            this.LastName = lastName;
+            this.Age = age;
+        }
+
+        public override string ToString()
+        {
+            return $"{this.FirstName} {this.LastName} is {this.Age} years old.";
+        }
+    }
+}
+
+Lab2SalaryIncrease
+
+using System;
+using System.Collections.Generic;
+
+namespace PersonsInfo
+{
+    public class StartUp
+    {
+        static void Main(string[] args)
+        {
+            int lines = int.Parse(Console.ReadLine());
+            List<Person> persons = new List<Person>();
+            for (int i = 0; i < lines; i++)
+            {
+                string[] cmdArgs = Console.ReadLine().Split();
+                var person = new Person(cmdArgs[0],
+                                        cmdArgs[1],
+                                        int.Parse(cmdArgs[2]),
+                                        decimal.Parse(cmdArgs[3]));
+
+                persons.Add(person);
+            }
+            var parcentage = decimal.Parse(Console.ReadLine());
+            persons.ForEach(p => p.IncreaseSalary(parcentage));
+            persons.ForEach(p => Console.WriteLine(p.ToString()));
+        }
+    }
+}
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace PersonsInfo
+{
+    public class Person
+    {
+        public string FirstName { get; private set; }
+
+        public string LastName { get; private set; }
+
+        public int Age { get; private set; }
+
+        public decimal Salary { get; private set; }
+
+        public Person(string firstName, string lastName, int age, decimal salary)
+        {
+            this.FirstName = firstName;
+            this.LastName = lastName;
+            this.Age = age;
+            this.Salary = salary;
+        }
+
+        public void IncreaseSalary(decimal percentage)
+        {
+            if (this.Age > 30)
+            {
+                this.Salary += this.Salary * percentage / 100;
+            }
+            else
+            {
+                this.Salary += this.Salary * percentage / 200;
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"{this.FirstName} {this.LastName} receives {this.Salary:F2} leva.";
+        }
+    }
+}
+
+Lab3ValidationOfData
+using System;
+using System.Collections.Generic;
+
+namespace PersonsInfo
+{
+    public class StartUp
+    {
+        static void Main(string[] args)
+        {
+            int lines = int.Parse(Console.ReadLine());
+            List<Person> persons = new List<Person>();
+            for (int i = 0; i < lines; i++)
+            {
+                string[] cmdArgs = Console.ReadLine().Split();
+                var person = new Person(cmdArgs[0],
+                                        cmdArgs[1],
+                                        int.Parse(cmdArgs[2]),
+                                        decimal.Parse(cmdArgs[3]));
+
+                persons.Add(person);
+            }
+            var parcentage = decimal.Parse(Console.ReadLine());
+            persons.ForEach(p => p.IncreaseSalary(parcentage));
+            persons.ForEach(p => Console.WriteLine(p.ToString()));
+        }
+    }
+}
+using System;
+
+
+namespace PersonsInfo
+{
+    public class Person
+    {
+        private string firstName;
+        private string lastName;
+        private int age;
+        private decimal salary;
+
+        public Person(string firstName, string lastName, int age, decimal salary)
+        {
+            this.FirstName = firstName;
+            this.LastName = lastName;
+            this.Age = age;
+            this.Salary = salary;
+        }
+
+        public string FirstName
+        {
+            get
+            {
+                return this.firstName;
+            }
+            private set
+            {
+                if (value.Length < 3)
+                {
+                    throw new ArgumentException("First name cannot contain fewer than 3 symbols!");
+                }
+                this.firstName = value;
+            }
+        }
+
+        public string LastName
+        {
+            get
+            {
+                return this.lastName;
+            }
+            private set
+            {
+                if (value.Length < 3)
+                {
+                    throw new ArgumentException("Last name cannot contain fewer than 3 symbols!");
+                }
+                this.lastName = value;
+            }
+        }
+
+        public int Age
+        {
+            get
+            {
+                return this.age;
+            }
+            private set
+            {
+                if (value < 1)
+                {
+                    throw new ArgumentException("Age cannot be zero or a negative integer!");
+                }
+                this.age = value;
+            }
+        }
+
+        public decimal Salary
+        {
+            get
+            {
+                return this.salary;
+            }
+            private set
+            {
+                if (value < 460)
+                {
+                    throw new ArgumentException("Salary cannot be less than 460 leva!");
+                }
+                this.salary = value;
+            }
+        }
+
+
+        public void IncreaseSalary(decimal percentage)
+        {
+            if (this.Age > 30)
+            {
+                this.Salary += this.Salary * percentage / 100;
+            }
+            else
+            {
+                this.Salary += this.Salary * percentage / 200;
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"{this.FirstName} {this.LastName} receives {this.Salary:F2} leva.";
+        }
+    }
+}
+
+
+Lab4FirstAndReserveTeam
+using System;
+using System.Collections.Generic;
+
+namespace PersonsInfo
+{
+    public class StartUp
+    {
+        static void Main(string[] args)
+        {
+            int lines = int.Parse(Console.ReadLine());
+            List<Person> persons = new List<Person>();
+            for (int i = 0; i < lines; i++)
+            {
+                string[] cmdArgs = Console.ReadLine().Split();
+                var person = new Person(cmdArgs[0],
+                                        cmdArgs[1],
+                                        int.Parse(cmdArgs[2]),
+                                        decimal.Parse(cmdArgs[3]));
+
+                persons.Add(person);
+            }
+            
+            Team team = new Team("SoftUni");
+
+            foreach (Person person in persons)
+            {
+                team.AddPlayer(person);
+            }
+
+            Console.WriteLine($"First team has {team.FirstTeam.Count} players.");
+            Console.WriteLine($"Reserve team has {team.ReserveTeam.Count} players.");
+
+        }
+    }
+}
+
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace PersonsInfo
+{
+    public class Team
+    {
+        private string name;
+        private List<Person> firstTeam;
+        private List<Person> reserveTeam;
+
+        public Team(string name)
+        {
+            this.name = name;
+            this.firstTeam = new List<Person>();
+            this.reserveTeam = new List<Person>();
+        }
+
+        public string Name { get; set; }
+
+        public IReadOnlyCollection<Person> FirstTeam
+        {
+            get { return this.firstTeam.AsReadOnly(); }
+        }
+
+        public IReadOnlyCollection<Person> ReserveTeam
+        {
+            get { return this.reserveTeam.AsReadOnly(); }
+        }
+
+        public void AddPlayer(Person person)
+        {
+            if (person.Age < 40)
+            {
+                this.firstTeam.Add(person);
+            }
+            else
+            {
+                this.reserveTeam.Add(person);
+            }
+        }
+    }
+}
+
+using System;
+
+namespace PersonsInfo
+{
+    public class Person
+    {
+        private string firstName;
+        private string lastName;
+        private int age;
+        private decimal salary;
+
+        public Person(string firstName, string lastName, int age, decimal salary)
+        {
+            this.FirstName = firstName;
+            this.LastName = lastName;
+            this.Age = age;
+            this.Salary = salary;
+        }
+
+        public string FirstName
+        {
+            get
+            {
+                return this.firstName;
+            }
+            private set
+            {
+                if (value.Length < 3)
+                {
+                    throw new ArgumentException("First name cannot contain fewer than 3 symbols!");
+                }
+            }
+        }
+
+        public string LastName
+        {
+            get
+            {
+                return this.lastName;
+            }
+            private set
+            {
+                if (value.Length < 3)
+                {
+                    throw new ArgumentException("Last name cannot contain fewer than 3 symbols!");
+                }
+            }
+        }
+
+        public int Age
+        {
+            get
+            {
+                return this.age;
+            }
+            private set
+            {
+                if (value < 1)
+                {
+                    throw new ArgumentException("Age cannot be zero or a negative integer!");
+                }
+                this.age = value;
+            }
+        }
+
+        public decimal Salary
+        {
+            get
+            {
+                return this.salary;
+            }
+            private set
+            {
+                if (value < 460)
+                {
+                    throw new ArgumentException("Salary cannot be less than 460 leva!");
+                }
+            }
+        }
+
+
+        public void IncreaseSalary(decimal percentage)
+        {
+            if (this.Age > 30)
+            {
+                this.Salary += this.Salary * percentage / 100;
+            }
+            else
+            {
+                this.Salary += this.Salary * percentage / 200;
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"{this.FirstName} {this.LastName} receives {this.Salary:F2} leva.";
+        }
+    }
+}
+
+
+Problem1ClassBoxData
+
+using System;
+
+using Problem1ClassBoxData.Models;
+
+namespace Problem1ClassBoxData
+{
+    public class StartUp
+    {
+        public static void Main(string[] args)
+        {
+            try
+            {
+                double length = double.Parse(Console.ReadLine());
+                double width = double.Parse(Console.ReadLine());
+                double height = double.Parse(Console.ReadLine());
+
+                Box box = new Box(length, width, height);
+                Console.WriteLine(box.ToString());
+            }
+            catch(ArgumentException ae)
+            {
+                Console.WriteLine(ae.Message);
+            }
+        }
+    }
+}
+
+using System;
+using System.Text;
+
+using Problem1ClassBoxData.Exceptions;
+
+namespace Problem1ClassBoxData.Models
+{
+    public class Box
+    {
+        private double length;
+        private double width;
+        private double height;
+
+        public double Length
+        {
+            get
+            {
+                return length;
+            }
+            set
+            {
+                if (value<=0)
+                {
+                    throw new ArgumentException(ExceptionsMessages.LengthZeroOrNegativException);
+                }
+                this.length = value;
+            }
+        }
+
+        public double Width
+        {
+            get
+            {
+                return width;
+            }
+            set
+            {
+                if (value <= 0)
+                {
+                    throw new ArgumentException(ExceptionsMessages.WidthZeroOrNegativException);
+                }
+                this.width = value;
+            }
+        }
+
+        public double Height
+        {
+            get
+            {
+                return height;
+            }
+            set
+            {
+                if (value <= 0)
+                {
+                    throw new ArgumentException(ExceptionsMessages.HeightZeroOrNegativException);
+                }
+                this.height = value;
+            }
+        }
+
+        public Box(double length,double width, double height)
+        {
+            this.Length = length;
+            this.Width = width;
+            this.Height = height;
+        }
+
+        public double SurfaceArea()
+        {       
+            double surfaceArea = 2 * this.Length * this.Width
+                + 2 * this.Length * this.Height
+                + 2 * this.Width * this.Height;
+            return surfaceArea;
+        }
+
+        public double LateralSurfaceArea()
+        {
+            double lateralSurfaceArea = 2 * this.Length *  this.Height
+                            + 2 * this.Width * this.Height;
+            return lateralSurfaceArea;
+
+        }
+
+        public double Volume()
+        {
+            double volume = this.Length * this.Height
+                * this.Width;
+            return volume;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder result = new StringBuilder();
+            result.AppendLine($"Surface Area - {SurfaceArea():f2}");
+            result.AppendLine($"Lateral Surface Area - {LateralSurfaceArea():f2}");
+            result.AppendLine($"Volume - {Volume():f2}");
+
+            return result.ToString().TrimEnd();
+        }
+    }
+}
+
+namespace Problem1ClassBoxData.Exceptions
+{
+    public static class ExceptionsMessages
+    {
+        public static string LengthZeroOrNegativException =
+            "Length cannot be zero or negative.";
+        public static string WidthZeroOrNegativException =
+            "Width cannot be zero or negative.";
+        public static string HeightZeroOrNegativException =
+            "Height cannot be zero or negative.";
+
+    }
+}
+
+
+Problem3ShoppingSpree
+
+using Problem3ShoppingSpree.Core;
+namespace Problem3ShoppingSpree
+{
+    public class StartUp
+    {
+        public static void Main(string[] args)
+        {
+            Engine engine = new Engine();
+            engine.Run();
+        }
+    }
+}
+
+folder Core
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using Problem3ShoppingSpree.Models;
+
+namespace Problem3ShoppingSpree.Core
+{
+    public class Engine
+    {
+        private List<Person> persons;
+        private List<Product> products;
+
+        public Engine()
+        {
+            this.persons = new List<Person>();
+            this.products = new List<Product>();
+        }
+
+        public void Run()
+        {
+            try
+            {
+                InputPerson();
+                InputProducts();
+            }
+            catch (ArgumentException ae)
+            {
+                Console.WriteLine(ae.Message);
+                return;
+            }
+
+            string command = Console.ReadLine();
+
+            while (command != "END")
+            {
+                try
+                {
+                    string[] commandTokens = command
+                                        .Split(" ", StringSplitOptions.RemoveEmptyEntries)
+                                        .ToArray();
+                    string personName = commandTokens[0];
+                    string productName = commandTokens[1];
+
+                    Person person = this.persons
+                        .FirstOrDefault(p => p.Name == personName);
+
+                    Product product = this.products
+                        .FirstOrDefault(p => p.Name == productName);
+
+                    if (person != null && product != null)
+                    {
+                        person.BuyProduct(product);
+                        Console.WriteLine($"{person.Name} bought {product.Name}");
+                    }
+
+                }
+                catch (InvalidOperationException ioe)
+                {
+                    Console.WriteLine(ioe.Message);
+                }
+
+                command = Console.ReadLine();
+            }
+
+            Console.WriteLine(String.Join(Environment.NewLine, this.persons));
+        }
+
+        private void InputProducts()
+        {
+            string[] productTokens = Console.ReadLine()
+                                        .Split(";"
+                                        , StringSplitOptions.RemoveEmptyEntries)
+                                        .ToArray();
+
+            for (int i = 0; i < productTokens.Count(); i++)
+            {
+                string[] nameCost = productTokens[i]
+                    .Split("=")
+                    .ToArray();
+                string name = nameCost[0];
+                decimal cost = decimal.Parse(nameCost[1]);
+
+                Product currentProduct = new Product(name, cost);
+                products.Add(currentProduct);
+            }
+        }
+
+        private void InputPerson()
+        {
+            string[] personTokens = Console.ReadLine()
+                            .Split(";"
+                            , StringSplitOptions.RemoveEmptyEntries)
+                            .ToArray();
+
+            for (int i = 0; i < personTokens.Count(); i++)
+            {
+                string[] nameMoney = personTokens[i]
+                    .Split("=")
+                    .ToArray();
+                string name = nameMoney[0];
+                decimal money = decimal.Parse(nameMoney[1]);
+
+                Person currentPerson = new Person(name, money);
+                persons.Add(currentPerson);
+            }
+        }
+    }
+}
+
+folder Models
+
+using System;
+using System.Collections.Generic;
+
+using Problem3ShoppingSpree.Exceptions;
+
+namespace Problem3ShoppingSpree.Models
+{
+    public class Person
+    {
+        private string name;
+        private decimal money;
+        private List<Product> bag;
+
+        public Person(string name, decimal money)
+        {
+            this.Name = name;
+            this.Money = money;
+            bag = new List<Product>();
+        }
+
+        public string Name
+        {
+            get
+            {
+                return name;
+            }
+            private set
+            {
+                if (String.IsNullOrWhiteSpace(value))
+                {
+                    throw new ArgumentException
+                        (ExceptionsMessages.CannotByEmptyString);
+                }
+                this.name = value;
+            }
+        }
+
+        public decimal Money
+        {
+            get
+            {
+                return this.money;
+            }
+            private set
+            {
+                if (value < 0)
+                {
+                    throw new ArgumentException
+                        (ExceptionsMessages.MoneyCannotBeNegativeNumber);
+                }
+                this.money = value;
+            }
+        }
+
+        public void BuyProduct(Product product)
+        {
+            decimal moneyLeft = this.Money - product.Cost;
+            if (moneyLeft < 0)
+            {
+                throw new InvalidOperationException(String.Format
+                    (ExceptionsMessages.CanNotAffordProductException
+                    , this.Name, product.Name));
+            }
+            this.Money = moneyLeft;
+            this.bag.Add(product);
+        }
+
+        public override string ToString()
+        {
+            if (this.bag.Count == 0)
+            {
+                return $"{this.Name} - Nothing bought";
+            }
+
+            return $"{this.Name} - {String.Join(", ",bag)}";
+        }
+    }
+}
+
+using System;
+
+using Problem3ShoppingSpree.Exceptions;
+
+namespace Problem3ShoppingSpree.Models
+{
+    public class Product
+    {
+        private string name;
+        private decimal cost;
+
+        public Product(string name, decimal cost)
+        {
+            this.Name = name;
+            this.Cost = cost;
+        }
+
+        public string Name
+        {
+            get
+            {
+                return name;
+            }
+            private set
+            {
+                if (String.IsNullOrWhiteSpace(value))
+                {
+                    throw new ArgumentException
+                        (ExceptionsMessages.CannotByEmptyString);
+                }
+                this.name = value;
+            }
+        }
+
+        public decimal Cost
+        {
+            get
+            {
+                return cost;
+            }
+            private set
+            {
+                if (value < 0)
+                {
+                    throw new ArgumentException
+                        (ExceptionsMessages.MoneyCannotBeNegativeNumber);
+                }
+                this.cost = value;
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"{this.Name}";
+        }
+    }
+}
+
+folder Exceptions
+namespace Problem3ShoppingSpree.Exceptions
+{
+    public static class ExceptionsMessages
+    {
+        public static string CannotByEmptyString =
+            "Name cannot be empty";
+        public static string MoneyCannotBeNegativeNumber =
+            "Money cannot be negative";
+        public static string CanNotAffordProductException =
+            "{0} can't afford {1}";
+    }
+}
+
+
+
+Problem4 AnimalFarm
+
+using AnimalFarm.Core;
+
+namespace AnimalFarm
+{
+    public class StartUp
+    {
+        static void Main(string[] args)
+        {
+            Engine engine = new Engine();
+            engine.Run();
+        }
+    }
+}
+
+
+using System;
+
+using AnimalFarm.Models;
+
+namespace AnimalFarm.Core
+{
+    public class Engine
+    {
+        public void Run()
+        {
+            try
+            {
+                string name = Console.ReadLine();
+                int age = int.Parse(Console.ReadLine());
+
+                Chicken chicken = new Chicken(name, age);
+                Console.WriteLine(
+                    "Chicken {0} (age {1}) can produce {2} eggs per day.",
+                    chicken.Name,
+                    chicken.Age,
+                    chicken.ProductPerDay);
+            }
+            catch (ArgumentException ae)
+            {
+                Console.WriteLine(ae.Message);
+            }
+        }
+    }
+}
+
+using System;
+
+using AnimalFarm.Exceptions;
+
+namespace AnimalFarm.Models
+{
+    public class Chicken
+    {
+        private const int MinAge = 0;
+        private const int MaxAge = 15;
+
+        private string name;
+        private int age;
+
+        internal Chicken(string name, int age)
+        {
+            this.Name = name;
+            this.Age = age;
+        }
+
+        public string Name
+        {
+            get
+            {
+                return this.name;
+            }
+
+            private set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    throw new ArgumentException
+                        (ExceptionsMessages.CannotByEmptyString);
+                }
+                this.name = value;
+            }
+        }
+
+        public int Age
+        {
+            get
+            {
+                return this.age;
+            }
+
+            private set
+            {
+                if (value<MinAge || value>MaxAge)
+                {
+                    throw new ArgumentException
+                        (ExceptionsMessages.AgeIsOutside0And15);
+                }
+                this.age = value;
+            }
+        }
+
+        public double ProductPerDay
+        {
+			get
+			{				
+				return this.CalculateProductPerDay();
+			}
+        }
+
+         double CalculateProductPerDay()
+        {
+            switch (this.Age)
+            {
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                    return 1.5;
+                case 4:
+                case 5:
+                case 6:
+                case 7:
+                    return 2;
+                case 8:
+                case 9:
+                case 10:
+                case 11:
+                    return 1;
+                default:
+                    return 0.75;
+            }
+        }
+    }
+}
+
+
+namespace AnimalFarm.Exceptions
+{
+    public static class ExceptionsMessages
+    {
+        public static string CannotByEmptyString =
+            "Name cannot be empty.";
+        public static string AgeIsOutside0And15 =
+            "Age should be between 0 and 15.";
+    }
+}
+
+Problem 4 PizzaCalories
+
+using Problem4PizzaCalories.Core;
+
+namespace Problem4PizzaCalories
+{
+    public class StartUp
+    {
+        public static void Main(string[] args)
+        {
+            Engine engine = new Engine();
+            engine.Run();
+        }
+    }
+}
+
+using Problem4PizzaCalories.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace Problem4PizzaCalories.Core
+{
+    public class Engine
+    {
+        public void Run()
+        {
+            try
+            {
+                string[] inputPizza = Console.ReadLine()
+                    .Split(" ")
+                    .ToArray();
+
+                string pizzaName = inputPizza[1];
+
+                string[] inputDough = Console.ReadLine()
+                                .Split(" ")
+                                .ToArray();
+
+                string flourType = inputDough[1];
+                string bakingTechnique = inputDough[2];
+                double weightDough = double.Parse(inputDough[3]);
+                Dough dough = new Dough(flourType,
+                                        bakingTechnique,
+                                        weightDough);
+
+                Pizza pizza = new Pizza(pizzaName, dough);
+
+                string command = Console.ReadLine();
+
+                while (command != "END")
+                {
+                    string[] topingItem = command
+                        .Split(" ")
+                        .ToArray();
+
+                    string type = topingItem[1];
+                    double weightToping = double.Parse(topingItem[2]);
+                    Topping toping = new Topping(type, weightToping);
+
+                    pizza.AddToping(toping);
+
+                    command = Console.ReadLine();
+                }
+
+                Console.WriteLine(pizza.ToString());
+            }
+            catch (ArgumentException ae)
+            {
+                Console.WriteLine(ae.Message);
+            }
+        }
+    }
+}
+
+
+using Problem4PizzaCalories.Exceptions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Problem4PizzaCalories.Models
+{
+    public class Pizza
+    {
+        private string name;
+        private Dough dough;
+        private List<Topping> toppings;
+
+        public Pizza()
+        {
+            this.toppings = new List<Topping>();
+        }
+
+        public Pizza(string name, Dough dough):this()
+        {
+            this.Name = name;
+            this.Dough = dough;
+        }
+
+        public string Name
+        {
+            get
+            {
+                return this.name;
+            }
+            private set
+            {
+                if (value.Length<1 ||value.Length>15)
+                {
+                    throw new ArgumentException(ExceptionsMessages.InvalidPizzaName);
+                }
+                this.name = value;
+            }
+        }
+
+        public Dough Dough
+        {
+            get
+            {
+                return this.dough;
+            }
+
+            private set
+            {
+                this.dough = value;
+            }
+        }
+
+        public void AddToping(Topping topping)
+        {
+            if (toppings.Count<0 || toppings.Count>10)
+            {
+                throw new ArgumentException(ExceptionsMessages.NumberOfTopingMust0_15);
+            }
+
+            toppings.Add(topping);
+
+        }
+
+        public override string ToString()
+        {
+            double caloriesPizza = dough.TotalCalories() + this.toppings.Sum(t => t.TotalCalories());
+            return $"{this.Name} - {caloriesPizza:f2} Calories.";
+            
+        }
+    }
+}
+
+using System;
+
+using Problem4PizzaCalories.Exceptions;
+
+namespace Problem4PizzaCalories.Models
+{
+    public class Dough
+    {
+        private string flourType;
+        private string bakingTechnique;
+        private double weight;
+
+        public Dough(string flourType, string bakingTechnique, double weight)
+        {
+            this.FlourType = flourType;
+            this.BakingTechnique = bakingTechnique;
+            this.Weight = weight;
+        }
+
+        public string FlourType
+        {
+            get
+            {
+                return this.flourType;
+            }
+            private set
+            {
+                if (value.ToLower() != "white" && value.ToLower() != "wholegrain")
+                {
+                    throw new ArgumentException(ExceptionsMessages.InvalidTypeOfDough);
+                }
+                this.flourType = value;
+            }
+        }
+
+        public string BakingTechnique
+        {
+            get
+            {
+                return this.bakingTechnique;
+            }
+            private set
+            {
+                if (value.ToLower() != "crispy"
+                    && value.ToLower() != "chewy"
+                    && value.ToLower() != "homemade")
+                {
+                    throw new ArgumentException(ExceptionsMessages.InvalidTypeOfDough);
+                }
+                this.bakingTechnique = value;
+            }
+        }
+
+        public double Weight
+        {
+            get
+            {
+                return this.weight;
+            }
+
+            private set
+            {
+                if (value < 1 || value > 200)
+                {
+                    throw new ArgumentException(ExceptionsMessages.InvalidWeight);
+                }
+                this.weight = value;
+            }
+        }
+
+        public double TotalCalories()
+        {
+            double result = this.Weight * 2;
+
+            result = ExecuteFlourType(result);
+            result = ExecuteBakeType(result);
+
+            return result;
+        }
+
+        private double ExecuteBakeType(double result)
+        {
+            switch (this.BakingTechnique.ToLower())
+            {
+                case "crispy":
+                    result *= 0.9;
+                    break;
+
+                case "chewy":
+                    result *= 1.1;
+                    break;
+
+                case "homemade":
+                    result *= 1.0;
+                    break;
+
+                default:
+                    break;
+            }
+
+            return result;
+        }
+
+        private double ExecuteFlourType(double result)
+        {
+            switch (this.FlourType.ToLower())
+            {
+                case "white":
+                    result *= 1.5;
+                    break;
+
+                case "wholegrain":
+                    result *= 1.0;
+                    break;
+
+                default:
+                    break;
+            }
+
+            return result;
+        }
+
+    }
+}
+
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+using Problem4PizzaCalories.Exceptions;
+
+namespace Problem4PizzaCalories.Models
+{
+    public class Topping
+    {
+        private string type;
+        private double weight;
+
+        public Topping(string type, double weight)
+        {
+            this.Type = type;
+            this.Weight = weight;
+        }
+
+        public string Type
+        {
+            get
+            {
+                return this.type;
+            }
+            private set
+            {
+                if (value.ToLower() != "meat" && value.ToLower() != "veggies" &&
+                    value.ToLower() != "cheese" && value.ToLower() != "sauce")
+                {
+                    throw new ArgumentException(String.Format(ExceptionsMessages.InvalitTopingType, value));
+                }
+                this.type = value;
+            }
+        }
+
+        public double Weight
+        {
+            get
+            {
+                return weight;
+            }
+            private set
+            {
+                if (value<0 || value>50)
+                {
+                    throw new ArgumentException(String.Format(ExceptionsMessages.InvalidTopingWeight, this.Type));
+                }
+                this.weight = value;
+            }
+        }
+
+        public double TotalCalories()
+        {
+            double result = 2 * this.Weight;
+
+            result = ExecuteToppingType(result);
+
+            return result;
+        }
+
+        private double ExecuteToppingType(double result)
+        {
+            switch (this.Type.ToLower())
+            {
+                case "meat":
+                    result *= 1.2;
+                    break;
+
+                case "veggies":
+                    result *= 0.8;
+                    break;
+
+                case "cheese":
+                    result *= 1.1;
+                    break;
+
+                case "sauce":
+                    result *= 0.9;
+                    break;
+
+                default:
+                    break;
+            }
+
+            return result;
+        }
+    }
+}
+
+
+namespace Problem4PizzaCalories.Exceptions
+{
+    public static class ExceptionsMessages
+    {
+        public static string InvalidTypeOfDough =
+            "Invalid type of dough.";
+        public static string InvalidWeight =
+            "Dough weight should be in the range [1..200].";
+        public static string InvalitTopingType =
+            "Cannot place {0} on top of your pizza.";
+        public static string InvalidTopingWeight =
+            "{0} weight should be in the range [1..50].";
+        public static string InvalidPizzaName =
+            "Pizza name should be between 1 and 15 symbols.";
+        public static string NumberOfTopingMust0_15 =
+            "Number of toppings should be in range [0..10].";
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
