@@ -1,0 +1,1094 @@
+
+using NUnit.Framework;
+
+namespace Skeleton.Tests
+{
+    [TestFixture]
+    public class BankAccountTest
+    {
+        private BankAccount bankAccount;
+
+        [SetUp]
+        public void CreateBankAccount()
+        {
+            bankAccount = new BankAccount(100m);
+        }
+
+        [TearDown]
+        public void DestroyBankAccount()
+        {
+            bankAccount = null;
+        }
+                     
+        [Test]
+        public void TestNewBankAccount()
+        {
+            var bankAccount = new BankAccount(100m);
+
+            Assert.That(bankAccount.Balance, Is.EqualTo(100m)
+                ,"Creating of new Bank Account");
+        } 
+
+        [Test]
+        public void TestWithdrawMoreThanBalance()
+        {
+            Assert.That(() => bankAccount.WithDraw(500m),
+                Throws.ArgumentException.With.Message
+                .EqualTo("No enough money!"));
+        }
+    }
+}
+
+using NUnit.Framework;
+
+namespace Skeleton.Tests
+{
+    [TestFixture]
+    public class AxeTests
+    {
+        [Test]
+        public void TestLuseDurability()
+        {
+            //Arrange
+            Axe axe = new Axe(10,10);
+            Dummy dummy = new Dummy(10, 10);
+
+            //Act
+            axe.Attack(dummy);
+
+            //Assert
+            Assert.That(axe.DurabilityPoints, Is.EqualTo(9));                                 
+        }
+
+        [Test]
+        public void TestAttackBrokenWeapon()
+        {
+            //Arrange
+            Axe axe = new Axe(1, 1);
+            Dummy dummy = new Dummy(10, 10);
+
+            //Act
+            axe.Attack(dummy);
+
+            //Assert
+            Assert.That(() => axe.Attack(dummy),
+                Throws.InvalidOperationException.With.Message
+                .EqualTo("Axe is broken."));
+        }
+    }
+}
+
+using NUnit.Framework;
+
+namespace Skeleton.Tests
+{
+    [TestFixture]
+    public class DummyTests
+    {
+        [Test]
+        public void DummyLosesHealth()
+        {
+            //Arrange
+            Dummy dummy = new Dummy(10, 10);
+            
+            //Act
+            dummy.TakeAttack(1);
+
+            //Assert
+            Assert.That(dummy.Health, Is.EqualTo(9));
+        }
+
+        [Test]
+        public void DummyTakeAttackIsDead()
+        {
+            //Arrange
+            Dummy dummy = new Dummy(0, 10);
+
+            //Act
+            
+            //Assert
+            Assert.That(() => dummy.TakeAttack(1),
+                Throws.InvalidOperationException.With.Message
+                .EqualTo("Dummy is dead."));
+        }
+
+        [Test]
+        public void DummyIsDeadGiveXP()
+        {
+            //Arrange
+            Dummy dummy = new Dummy(0, 10);
+
+            //Act
+
+            //Assert
+            Assert.That(() => dummy.GiveExperience(),
+                Is.EqualTo(10));
+        }
+
+        [Test]
+        public void DummyNotIsDeadCantGiveXP()
+        {
+            //Arrange
+            Dummy dummy = new Dummy(10, 10);
+
+            //Act
+
+            //Assert
+            Assert.That(() => dummy.GiveExperience(),
+                Throws.InvalidOperationException.With.Message
+                .EqualTo("Target is not dead."));
+        }
+    }
+}
+
+
+EXERSISE	
+
+using NUnit.Framework;
+using System;
+
+namespace Tests
+{
+    public class DatabaseTests
+    {		// трие се Databse, първото, абе using-ите и рефернциите към тествания проект
+        private Database.Database database;
+        private readonly int[] data = new int[] { 1, 2 };
+
+        [SetUp]
+        public void Setup()
+        {
+            this.database = new Database.Database(this.data);
+        }
+
+        [Test]
+        public void TestConstructorWorkCorect()
+        {
+            int expectedCount = 2;
+
+            Assert.AreEqual(expectedCount, this.database.Count);
+        }
+
+        [Test]
+        public void TestAddingCorectly()
+        {
+            int expectedCount = 3;
+
+            this.database.Add(3);
+
+            Assert.AreEqual(expectedCount, this.database.Count);
+        }
+
+        [Test]
+        public void TestAddingWhenFull()
+        {
+            for (int i = 3; i <=16 ; i++)
+            {
+                this.database.Add(i);
+            }
+
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                this.database.Add(17);
+            });
+        }
+
+        [Test]
+        public void TestRemovingCorectly()
+        {
+            int expectedCount = 1;
+
+            this.database.Remove();
+
+            Assert.AreEqual(expectedCount, this.database.Count);
+        }
+
+        [Test]
+        public void TestRemovingWhenEmpty()
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                this.database.Remove();
+            }
+
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                this.database.Remove();
+            });
+        }
+
+        [Test]
+        public void TestFetchWorkCorrectly()
+        {
+            int[] expectedArr = this.database.Fetch();
+
+            CollectionAssert.AreEqual(this.data, expectedArr);
+        }
+    }
+}
+
+using ExtendedDatabase;
+using NUnit.Framework;
+using System;
+
+namespace Tests
+{
+    public class ExtendedDatabaseTests
+    {
+        private ExtendedDatabase.ExtendedDatabase persons;
+        private Person personFirst;
+        private Person personSecond;
+
+        [SetUp]
+        public void Setup()
+        {
+            this.personFirst = new Person(100, "Pesho");
+            this.personSecond = new Person(200, "Gosho");
+            this.persons = new ExtendedDatabase.ExtendedDatabase(personFirst, personSecond);
+        }
+
+        [Test]
+        public void TestConstructorWorkCorect()
+        {
+            int expectedCount = 2;
+
+            Assert.AreEqual(expectedCount, this.persons.Count);
+        }
+
+        [Test]
+        public void TestAddingCorectly()
+        {
+            int expectedCount = 3;
+            Person personTri = new Person(300, "Stamat");
+
+            this.persons.Add(personTri);
+
+
+            Assert.AreEqual(expectedCount, this.persons.Count);
+        }
+
+        [Test]
+        public void TestAddingWhenSameName()
+        {
+            Person personFort = new Person(400, "Pesho");
+
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                this.persons.Add(personFort);
+            });
+        }
+
+        [Test]
+        public void TestAddingWhenSameId()
+        {
+            Person personFort = new Person(100, "Stamat");
+
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                this.persons.Add(personFort);
+            });
+        }
+
+        [Test]
+        public void TestAddingWhenFull()
+        {
+            Person person3 = new Person(1, "S1");
+            this.persons.Add(person3);
+
+            Person person4 = new Person(2, "S2");
+            this.persons.Add(person4);
+
+            Person person5 = new Person(3, "S3t");
+            this.persons.Add(person5);
+
+            Person person6 = new Person(4, "S4");
+            this.persons.Add(person6);
+
+            Person person7 = new Person(5, "S5");
+            this.persons.Add(person7);
+
+            Person person8 = new Person(6, "Stamat6");
+            this.persons.Add(person8);
+
+            Person person9 = new Person(7, "Stama7t");
+            this.persons.Add(person9);
+
+            Person person10 = new Person(8, "Stamat8");
+            this.persons.Add(person10)
+                ;
+            Person person11 = new Person(9, "Stamat9");
+            this.persons.Add(person11);
+
+            Person person12 = new Person(10, "Stama10t");
+            this.persons.Add(person12);
+
+            Person person13 = new Person(11, "Stamat11");
+            this.persons.Add(person13);
+
+            Person person14 = new Person(12, "Stamat12");
+            this.persons.Add(person14);
+
+            Person person15 = new Person(13, "Stamat13");
+            this.persons.Add(person15);
+
+            Person person16 = new Person(14, "Stamat14");
+            this.persons.Add(person16);
+
+            Person person17 = new Person(15, "Stamat15");
+
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                this.persons.Add(person17);
+            });
+        }
+
+        [Test]
+        public void TestRemovingCorectly()
+        {
+            int expectedCount = 1;
+
+            this.persons.Remove();
+
+            Assert.AreEqual(expectedCount, this.persons.Count);
+        }
+
+        [Test]
+        public void TestRemovingWhenEmpty()
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                this.persons.Remove();
+            }
+
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                this.persons.Remove();
+            });
+        }
+
+        [Test]
+        public void TestFindUserNameCorectly()
+        {
+            string expectedPerson = "Pesho";
+            
+            Assert.AreEqual(expectedPerson,this.persons.FindByUsername("Pesho").UserName);
+
+        }
+
+
+        [Test]
+        public void TestFindNoUser()
+        {
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                this.persons.FindByUsername("Stamat");
+            });
+        }
+
+        [Test]
+        public void TestFindUserIsNull()
+        {
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                this.persons.FindByUsername(null);
+            });
+        }
+
+        [Test]
+        public void TestFindUserCaseSensitive()
+        {
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                this.persons.FindByUsername("StamaT");
+            });
+        }
+
+        [Test]
+        public void TestFindByIdCorectly()
+        {
+            long expectedId = 100;
+
+            Assert.AreEqual(expectedId, this.persons.FindById(100).Id);
+        }
+
+        [Test]
+        public void TestFindNoId()
+        {
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                this.persons.FindById(101);
+            });
+        }
+
+        [Test]
+        public void TestFindNegativId()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                this.persons.FindById(-1);
+            });
+        }
+    }
+}
+
+using CarManager;
+using NUnit.Framework;
+using System;
+
+namespace Tests
+{
+    public class CarTests
+    {
+        private Car car;
+               
+        [SetUp]
+        public void Setup()
+        {   //this.FuelAmount = 0;w prazniq ctor
+            //Car(string make, string model,
+            //  double fuelConsumption, double fuelCapacity)
+            this.car = new Car("Audi","A4",5.00,70.00);
+        }
+
+        [Test]
+        public void TestConstruktorCorectly()
+        {
+            double expectedFuelAmount = 0;
+           
+            Assert.AreEqual(expectedFuelAmount, this.car.FuelAmount);
+            Assert.AreEqual("Audi", this.car.Make);
+            Assert.AreEqual("A4", this.car.Model);
+            Assert.AreEqual(5.00, this.car.FuelConsumption);
+            Assert.AreEqual(70.00, this.car.FuelCapacity);
+        }
+
+        [Test]
+        public void TestMakeGet()
+        {
+            string expectedMake = "Audi";
+            Assert.AreEqual(expectedMake, this.car.Make);
+        }
+               
+        [Test]
+        public void TestMakeSetEmpty()
+        {
+            Assert.Throws<ArgumentException>(() =>
+            {
+                Car carTest = new Car("", "A4", 5.00, 70.00);               
+            });
+        }
+
+        [Test]
+        public void TestMakeSetNull()
+        {
+            Assert.Throws<ArgumentException>(() =>
+            {
+                Car carTest = new Car(null, "A4", 5.00, 70.00);
+            });
+        }
+
+
+        [Test]
+        public void TestMadeGet()
+        {
+            string expectedModel = "A4";
+            Assert.AreEqual(expectedModel, this.car.Model);
+        }
+
+        [Test]
+        public void TestModelSetEmpty()
+        {
+            Assert.Throws<ArgumentException>(() =>
+            {
+                Car carTest = new Car("Audi", "", 5.00, 70.00);
+            });
+        }
+
+        [Test]
+        public void TestModelSetNull()
+        {
+            Assert.Throws<ArgumentException>(() =>
+            {
+                Car carTest = new Car("Audi", null, 5.00, 70.00);
+            });
+        }
+
+        [Test]
+        public void TestFuellConsumptionNegativ()
+        {
+            Assert.Throws<ArgumentException>(() =>
+            {
+                Car carTest = new Car("Audi","A4" , -5.00, 70.00);
+            });
+        }
+
+       //[Test]
+       //public void TestFuellAmountNegativ()
+       //{
+       //    double fuel = -5;
+       //    Assert.Throws<ArgumentException>(() =>
+       //    {
+       //        car.FuelAmount = fuel;
+       //    });
+       //
+       //}
+
+        [Test]
+        public void TestFuellCapcityNegativ()
+        {
+            Assert.Throws<ArgumentException>(() =>
+            {
+                Car carTest = new Car("Audi", "A4", 5.00, -70.00);
+            });
+        }
+
+        [Test]
+        public void TestRefuelCorectly()
+        {
+            double expectedFuelAmount = 10;
+
+            car.Refuel(10);
+
+            Assert.AreEqual(expectedFuelAmount, this.car.FuelAmount);
+        }
+
+        [Test]
+        public void TestRefuelNotNegativ()
+        {
+            Assert.Throws<ArgumentException>(() =>
+            {
+                car.Refuel(-5);
+            });
+        }
+
+        [Test]
+        public void TestRefuelNotZero()
+        {
+            Assert.Throws<ArgumentException>(() =>
+            {
+                car.Refuel(0);
+            });
+        }
+
+        [Test]
+        public void TestRefuelMoreCapacity()
+        {
+            double expectedFuelAmount = 70;
+
+            car.Refuel(80);
+
+            Assert.AreEqual(expectedFuelAmount, this.car.FuelAmount);
+        }
+
+        [Test]
+        public void TestDriveCorectly()
+        {
+            double expectedFuelAmount = 60;
+            car.Refuel(70);
+            car.Drive(200);
+
+            Assert.AreEqual(expectedFuelAmount, this.car.FuelAmount);
+        }
+
+        [Test]
+        public void TestDriveSmallFuell()
+        {
+            car.Refuel(5);           
+
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                car.Drive(200);
+            });
+        }
+    }
+}
+
+
+using FightingArena;
+using NUnit.Framework;
+using System;
+
+namespace Tests
+{
+    public class WarriorTests
+    {
+        private Warrior warrior;
+
+        [SetUp]
+        public void Setup()
+        {
+            //public Warrior(string name, int damage, int hp) =ctor
+            warrior = new Warrior("Stamat", 50, 50);
+        }
+
+        [Test]
+        public void Test1()
+        {
+            Assert.Pass();
+        }
+
+        [Test]
+        public void TestConstruktorCorectly()
+        {
+            Assert.AreEqual("Stamat", this.warrior.Name);
+            Assert.AreEqual(50, this.warrior.Damage);
+            Assert.AreEqual(50, this.warrior.HP);
+        }
+
+        [Test]
+        public void TestNameSetEmpty()
+        {
+            Assert.Throws<ArgumentException>(() =>
+            {
+                Warrior warTest = new Warrior("", 50, 50);
+            });
+        }
+
+        [Test]
+        public void TestNameSetNull()
+        {
+            Assert.Throws<ArgumentException>(() =>
+            {
+                Warrior warTest = new Warrior(null, 50, 50);
+            });
+        }
+
+        [Test]
+        public void TestNameSetSpace()
+        {
+            Assert.Throws<ArgumentException>(() =>
+            {
+                Warrior warTest = new Warrior("  ", 50, 50);
+            });
+        }
+
+        [Test]
+        public void TestDamageNegativ()
+        {
+            Assert.Throws<ArgumentException>(() =>
+            {
+                Warrior warTest = new Warrior("Stamat", -1, 50);
+            });
+        }
+
+        [Test]
+        public void TestHPNegativ()
+        {
+            Assert.Throws<ArgumentException>(() =>
+            {
+                Warrior warTest = new Warrior("Stamat", 50, -1);
+            });
+        }
+               
+
+        [Test]
+        public void TestAtackHPUnder30Atack()
+        {
+            Assert.Throws<InvalidOperationException>(() =>
+            {//                                            D   HP
+                Warrior warriorFirst = new Warrior("Pesho", 50, 30);
+                Warrior warriorSecond = new Warrior("Gosho", 50, 31);
+           warriorFirst.Attack(warriorSecond);
+            });
+        }
+
+        [Test]
+        public void TestAtackHPUnder30Defense()
+        {
+            Assert.Throws<InvalidOperationException>(() =>
+            {//                                            D   HP
+                Warrior warriorFirst = new Warrior("Pesho", 50, 31);
+                Warrior warriorSecond = new Warrior("Gosho", 50, 30);
+                warriorFirst.Attack(warriorSecond);
+            });
+        }
+        
+        [Test]
+        public void TestAtackStrongerDefense()
+        {
+            Assert.Throws<InvalidOperationException>(() =>
+            {//                                            D   HP
+                Warrior warriorFirst = new Warrior("Pesho", 50, 40);
+                Warrior warriorSecond = new Warrior("Gosho", 45, 35);
+                warriorFirst.Attack(warriorSecond);
+            });
+        }
+
+        [Test]
+        public void TestAttackCorectly()
+        {//                                             D   HP
+            Warrior warriorFirst = new Warrior("Pesho", 50, 40);
+            Warrior warriorSecond = new Warrior("Gosho", 35, 35);
+            warriorFirst.Attack(warriorSecond);
+
+            int expectedHpFirst = 5;
+            int expectedHpSecond = 0;
+
+            Assert.AreEqual(expectedHpFirst, warriorFirst.HP);
+            Assert.AreEqual(expectedHpSecond, warriorSecond.HP);
+        }
+
+        [Test]
+        public void TestAttackDamageBigThenHP()
+        {//                                             D   HP
+            Warrior warriorFirst = new Warrior("Pesho", 50, 40);
+            Warrior warriorSecond = new Warrior("Gosho", 35, 35);
+            warriorFirst.Attack(warriorSecond);
+
+            int expectedHp = 0;
+
+            Assert.AreEqual(expectedHp, warriorSecond.HP);
+        }
+
+    }
+}
+
+Exam 18april2019
+
+using FightingArena;
+using NUnit.Framework;
+using System;
+
+namespace Tests
+{
+    public class ArenaTests
+    {
+
+        private Arena arena;
+
+
+        [SetUp]
+        public void Setup()
+        {
+            this.arena = new Arena();
+            Warrior warriorFirst = new Warrior("Pesho", 50, 40);
+            Warrior warriorSecond = new Warrior("Gosho", 45, 35);
+            
+            this.arena.Enroll(warriorFirst);
+            this.arena.Enroll(warriorSecond);
+        }
+
+        [Test]
+        public void TestIfConstruktorWorkCorrecly()
+        {
+            Assert.IsNotNull(this.arena.Warriors);
+        }
+
+
+        [Test]
+        public void TestEnrolledWarriorsEnrrolAgain()
+        {
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                Warrior warriorFirst = new Warrior("Pesho", 50, 40);
+                this.arena.Enroll(warriorFirst);  
+            });
+        }
+
+        [Test]
+        public void TestEnrollCorrectly()
+        {            
+            Warrior warriorThree = new Warrior("Stamat", 50, 40);
+            this.arena.Enroll(warriorThree);
+                       
+            Assert.That(this.arena.Warriors, Has.Member(warriorThree));
+        }
+
+        [Test]
+        public void TestWarriorNotEnrollDeffender()
+        {
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                Warrior warriorThree = new Warrior("Stamat", 50, 40);
+                this.arena.Fight("Pesho","Stamat");
+            });
+        }
+
+        [Test]
+        public void TestWarriorNotEnrollAttacer()
+        {
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                Warrior warriorThree = new Warrior("Stamat", 50, 40);
+                this.arena.Fight("Stamat", "Pesho");
+            });
+        }
+    }
+}
+
+namespace ParkingSystem.Tests
+{
+    using NUnit.Framework;
+    using System;
+
+    public class SoftParkTest
+    {
+        public SoftPark softpark;
+
+
+        [SetUp]
+        public void Setup()
+        {
+            this.softpark = new SoftPark();
+        }
+
+        [Test]
+        public void TestCorrectlyCount()
+        {
+            int expectedCount = 12;
+            Assert.AreEqual(expectedCount, softpark.Parking.Count);            
+        }
+
+        [Test]
+        public void TestParkCarCorrectly()
+        {
+            var carFirst = new Car("Audi", "OB 3834 AM");
+            softpark.ParkCar("A1", carFirst);
+
+            Assert.AreEqual(carFirst, softpark.Parking["A1"]);
+        }
+
+        [Test]
+        public void TestParkCarBusySpot()
+        {
+            var carFirst = new Car("Audi", "OB 3834 AM");
+            var carSecond = new Car("Passat", "OB 0181 AM");
+
+            softpark.ParkCar("A1", carFirst);
+
+            Assert.Throws<ArgumentException>(() =>
+            {
+                softpark.ParkCar("A1", carSecond);
+            });
+        }
+
+
+        [Test]
+        public void TestRemoveCarCorrectly()
+        {
+            var carFirst = new Car("Audi", "OB 3834 AM");
+            softpark.ParkCar("A1", carFirst);
+            softpark.RemoveCar("A1", carFirst);
+
+            Assert.AreEqual(null, softpark.Parking["A1"]);
+        }
+
+        public void TestRemoveCarCarNoExist()
+        {
+            var carFirst = new Car("Audi", "OB 3834 AM");
+            var carSecond = new Car("Passat", "OB 0181 AM");
+
+            softpark.ParkCar("A1", carFirst);
+
+           
+            Assert.Throws<ArgumentException>(() =>
+            {
+                softpark.RemoveCar("A1", carSecond);
+            });
+        }
+
+
+    }
+}
+
+Exam 14 april 2019
+
+namespace Telecom.Tests
+{
+    using NUnit.Framework;
+    using System;
+
+    public class Tests
+    {
+        public Phone phone;
+
+
+        [SetUp]
+        public void Setup()
+        {
+            this.phone = new Phone("nokia", "nokia 1");
+        }
+
+        [Test]
+        public void Test_Constructure()
+        {
+            Assert.AreEqual("nokia", this.phone.Make);
+            Assert.AreEqual("nokia 1", this.phone.Model);
+            Assert.AreEqual(0, this.phone.Count);
+        }
+
+       //[Test]
+       //public void TestCorrectlyCount()
+       //{
+       //
+       //    int expectedCount = 1;
+       //    phone.AddContact("nokia", "nokia 1");
+       //
+       //    Assert.AreEqual(expectedCount, phone.Count);
+       //}
+
+         [Test]
+        public void TestForCorrectlyMake()
+        {
+            var expectedMake = "nokia";
+            phone.AddContact("nokia", "nokia 1");
+
+            Assert.AreEqual(expectedMake, phone.Make);
+        }
+
+        [Test]
+        public void TestForNullMake()
+        {
+            phone.AddContact("Pesho", "112");
+
+            Assert.Throws<ArgumentException>(() =>
+            {
+               Phone phone = new Phone(null, "nokia 1");
+            });
+        }
+
+        [Test]
+        public void TestForCorrectlyModel()
+        {
+            var expectedModel = "nokia 1";
+            phone.AddContact("Pesho", "112");
+
+            Assert.AreEqual(expectedModel, phone.Model);
+        }
+
+        [Test]
+        public void TestForNullModel()
+        {
+            phone.AddContact("nokia", "nokia 1");
+
+            Assert.Throws<ArgumentException>(() =>
+            {
+                Phone phone = new Phone("nokia 1",null );
+
+            });
+        }
+
+        [Test]
+        public void Test_Add_Contact_Exception()
+        {
+            this.phone.AddContact("Name1", "Phone1");
+            this.phone.AddContact("Name2", "Phone2");
+
+            Assert.Throws<InvalidOperationException>(() => 
+			this.phone.AddContact("Name1", "Phone1"));
+           // Assert.AreEqual(2, this.phone.Count);
+        }
+
+        [Test]
+        public void TestCoolCorectlyPerson()
+        {
+            string expectedResult = $"Calling {"Pesho"} - {"112"}...";
+            phone.AddContact("Pesho", "112");
+
+            Assert.AreEqual(expectedResult, phone.Call("Pesho"));            
+        }
+
+        [Test]
+        public void TestCoolNotExistPerson()
+        {
+            phone.AddContact("nokia", "nokia 1");
+
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                phone.Call("Pesho");
+
+            });
+        }
+    }
+}
+
+using NUnit.Framework;
+using System;
+
+namespace TheRace.Tests
+{
+    public class RaceEntryTests
+    {
+        public RaceEntry raceEntry;
+
+        [SetUp]
+        public void Setup()
+        {
+            raceEntry = new RaceEntry();
+        }
+
+        [Test]
+        public void TestCount()
+        {
+            int expectedCount = 0;
+
+            Assert.AreEqual(expectedCount, raceEntry.Counter);
+        }
+
+
+        [Test]
+        public void TestAddRiderCorrectly()
+        {
+            UnitMotorcycle motor1 = new UnitMotorcycle("Jwa", 150, 350);
+            UnitRider rider1 = new UnitRider("Pesho", motor1);
+
+
+            string expectedResult = $"Rider {rider1.Name} added in race.";
+
+            Assert.AreEqual(expectedResult, raceEntry.AddRider(rider1));
+        }
+
+        [Test]
+        public void TestAddRiderRiderInvalid()
+        {
+
+            Assert.Throws<InvalidOperationException>(() =>
+            raceEntry.AddRider(null)
+            );
+        }
+
+        [Test]
+        public void TestAddRiderExisteRider()
+        {
+            UnitMotorcycle motor1 = new UnitMotorcycle("Jwa", 150, 350);
+            UnitRider rider1 = new UnitRider("Pesho", motor1);
+
+            raceEntry.AddRider(rider1);
+
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                raceEntry.AddRider(rider1);
+            }
+            );
+        }
+
+        // corectly
+        [Test]
+        public void TestCalculateAverageHorsePowerCorrectly()
+        {
+            UnitMotorcycle motor1 = new UnitMotorcycle("Jwa", 150, 350);
+            UnitRider rider1 = new UnitRider("Pesho", motor1);
+            raceEntry.AddRider(rider1);
+
+            UnitMotorcycle motor2 = new UnitMotorcycle("Ig", 150, 350);
+            UnitRider rider2 = new UnitRider("Gosho", motor2);
+            raceEntry.AddRider(rider2);
+
+            double expectedAvr = 150;
+            Assert.AreEqual(expectedAvr, raceEntry.CalculateAverageHorsePower());
+        }
+
+
+        [Test]
+        public void TestCalculateAverageHorsePowerMinParticiparts()
+        {
+            UnitMotorcycle motor1 = new UnitMotorcycle("Jwa", 150, 350);
+            UnitRider rider1 = new UnitRider("Pesho", motor1);
+            raceEntry.AddRider(rider1);            
+
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                raceEntry.CalculateAverageHorsePower();
+            }
+            );
+        }
+    }
+}

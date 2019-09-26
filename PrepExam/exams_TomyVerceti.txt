@@ -1,0 +1,593 @@
+using ViceCity.Core;
+using ViceCity.Core.Contracts;
+
+namespace ViceCity
+{
+    public class StartUp
+    {
+        private IEngine engine;
+
+        private static void Main()
+        {
+            IEngine engine = new Engine();
+            engine.Run();
+        }
+    }
+}
+
+using System;
+using ViceCity.Core.Contracts;
+using ViceCity.IO;
+using ViceCity.IO.Contracts;
+
+namespace ViceCity.Core
+{
+    public class Engine : IEngine
+    {
+        private IReader reader;
+        private IWriter writer;
+        private Controller controller;
+
+        public Engine()
+        {
+            this.reader = new Reader();
+            this.writer = new Writer();
+            this.controller = new Controller();
+        }
+
+        public void Run()
+        {
+            while (true)
+            {
+                var input = reader.ReadLine().Split();
+                if (input[0] == "Exit")
+                {
+                    Environment.Exit(0);
+                }
+                try
+                {
+                    if (input[0] == "AddPlayer")
+                    {
+                        Console.WriteLine(controller.AddPlayer(input[1]));
+                    }
+                    else if (input[0] == "AddGun")
+                    {
+                        Console.WriteLine(controller.AddGun(input[1], input[2]));
+                    }
+                    else if (input[0] == "AddGunToPlayer")
+                    {
+                        Console.WriteLine(controller.AddGunToPlayer(input[1]));
+                    }
+                    else if (input[0] == "Fight")
+                    {
+                        Console.WriteLine(controller.Fight());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    writer.WriteLine(ex.Message);
+                    throw;
+                }
+            }
+        }
+    }
+}
+
+
+
+namespace ViceCity.Core
+{
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using ViceCity.Core.Contracts;
+    using ViceCity.Messages;
+    using ViceCity.Models.Guns.Contracts;
+    using ViceCity.Models.Guns.Models;
+    using ViceCity.Models.Neghbourhoods;
+    using ViceCity.Models.Players.Contracts;
+    using ViceCity.Models.Players.Models;
+    using ViceCity.Repositories;
+
+    public class Controller : IController
+    {
+        private const string MainPlayerNameKey = "Vercetti";
+        private const string FullNameMainPlayer = "Tommy Vercetti";
+        private const int InitialMainPlayerHealthPoints = 100;
+        private readonly List<IPlayer> players;
+        private readonly GunRepository gunRepository;
+        private readonly GangNeighbourhood gangNeighbourhood;
+
+        public Controller()
+        {
+            this.players = new List<IPlayer>();
+            this.players.Add(new MainPlayer());
+            this.gunRepository = new GunRepository();
+            this.gangNeighbourhood = new GangNeighbourhood();
+        }
+
+        public string AddGun(string type, string name)
+        {
+            if (type != nameof(Pistol) && type != nameof(Rifle))
+            {
+                return OutputMessages.InvalidGun;
+            }
+
+            IGun gun = null;
+
+            switch (type)
+            {
+                case "Rifle":
+                    gun = new Rifle(name);
+                    break;
+
+                case "Pistol":
+                    gun = new Pistol(name);
+                    break;
+
+                default:
+                    break;
+            }
+
+            this.gunRepository.Add(gun);
+            return string.Format(OutputMessages.SuccessfullAddedGun, gun.Name, gun.GetType().Name);
+        }
+
+        public string AddGunToPlayer(string name)
+        {
+            if (this.gunRepository.Models.Count == 0)
+            {
+                return OutputMessages.NoAvailableWeapon;
+            }
+
+            if (name == MainPlayerNameKey)
+            {
+                IPlayer playerVercetti = this.players
+                    .FirstOrDefault(
+                    p => p.Name == FullNameMainPlayer && p.GetType().Name == nameof(MainPlayer));
+
+                IGun gunVercetti = this.gunRepository.Models.FirstOrDefault(g => g.CanFire == true);
+                this.gunRepository.Remove(gunVercetti);
+
+                playerVercetti.GunRepository.Add(gunVercetti);
+                return string.Format(OutputMessages.SuccessfullAddWeaponToMainPlayer, gunVercetti.Name);
+            }
+
+            if (this.players.FirstOrDefault(p => p.Name == name) == null)
+            {
+                return OutputMessages.PlayerNotExist;
+            }
+
+            IPlayer player = this.players.FirstOrDefault(p => p.Name == name);
+            IGun gun = this.gunRepository.Models.FirstOrDefault(g => g.CanFire == true);
+
+            this.gunRepository.Remove(gun);
+            player.GunRepository.Add(gun);
+
+            return string.Format(OutputMessages.SuccessfullAddWeaponToCivilPlayer, gun.Name, player.Name);
+        }
+
+        public string AddPlayer(string name)
+        {
+            IPlayer player = new CivilPlayer(name);
+            this.players.Add(player);
+            return string.Format(OutputMessages.SuccessfullAddPlayer, player.Name);
+        }
+
+        public string Fight()
+        {
+            MainPlayer mainPlayer = (MainPlayer)this.players
+                .FirstOrDefault(p => p.GetType().Name == nameof(MainPlayer));
+
+            List<IPlayer> civilPlayers = this.players
+                .Where(p => p.GetType().Name != nameof(MainPlayer))
+                .ToList();
+
+            this.gangNeighbourhood.Action(mainPlayer, civilPlayers);
+
+            StringBuilder sb = new StringBuilder();
+
+            if (civilPlayers.Any(p => p.IsAlive == true) &&
+                mainPlayer.LifePoints == InitialMainPlayerHealthPoints)
+            {
+                sb.AppendLine(OutputMessages.EverythingIsOkay);
+            }
+            else
+            {
+                sb.AppendLine(OutputMessages.FightHappened);
+
+                sb.AppendLine(string.Format(OutputMessages.TommyLifePoints, mainPlayer.LifePoints));
+
+                sb.AppendLine(string.Format(OutputMessages.KilledPlayers,
+                    civilPlayers.Where(p => p.IsAlive == false).Count()));
+                sb.AppendLine(string.Format(OutputMessages.LeftPlayers,
+                    civilPlayers.Where(p => p.IsAlive == true).Count()));
+            }
+
+            return sb.ToString().TrimEnd();
+        }
+    }
+}
+
+
+
+using System;
+using ViceCity.IO.Contracts;
+
+namespace ViceCity.IO
+{
+    internal class Reader : IReader
+    {
+        public string ReadLine()
+        {
+            return Console.ReadLine();
+        }
+    }
+}
+
+using System;
+using ViceCity.IO.Contracts;
+
+namespace ViceCity.IO
+{
+    public class Writer : IWriter
+    {
+        public void Write(string line)
+        {
+            Console.Write(line);
+        }
+
+        public void WriteLine(string line)
+        {
+            Console.WriteLine(line);
+        }
+    }
+}
+
+namespace ViceCity.Messages
+{
+    public class ExceptionMessages
+    {
+        public const string InvalidGunName = "Name cannot be null or a white space!";
+
+        public const string InvalidCountOfBullets = "Bullets cannot be below zero!";
+
+        public const string InvalidTotalBullets = "Total bullets cannot be below zero!";
+
+        public const string InvalidPlayerName = "Player's name cannot be null or a whitespace!";
+
+        public const string InvalidPlayerLifePoints = "Player life points cannot be below zero!";
+    }
+}
+
+namespace ViceCity.Messages
+{
+    public class OutputMessages
+    {
+        public const string NoAvailableWeapon = "There are no guns in the queue!";
+
+        public const string InvalidGun = "Invalid gun type!";
+
+        public const string SuccessfullAddedGun = "Successfully added {0} of type: {1}";
+
+        public const string SuccessfullAddWeaponToMainPlayer =
+            "Successfully added {0} to the Main Player: Tommy Vercetti";
+
+        public const string PlayerNotExist = "Civil player with that name doesn't exists!";
+
+        public const string SuccessfullAddWeaponToCivilPlayer =
+            "Successfully added {0} to the Civil Player: {1}";
+
+        public const string SuccessfullAddPlayer = "Successfully added civil player: {0}!";
+
+        public const string EverythingIsOkay = "Everything is okay!";
+
+        public const string FightHappened = "A fight happened:";
+
+        public const string TommyLifePoints = "Tommy live points: {0}!";
+
+        public const string KilledPlayers = "Tommy has killed: {0} players!";
+
+        public const string LeftPlayers = "Left Civil Players: {0}!";
+    }
+}
+
+
+
+namespace ViceCity.Models.Players.Models
+{
+    using System;
+    using ViceCity.Messages;
+    using ViceCity.Models.Guns.Contracts;
+    using ViceCity.Models.Players.Contracts;
+    using ViceCity.Repositories;
+    using ViceCity.Repositories.Contracts;
+
+    public abstract class Player : IPlayer
+    {
+        private string name;
+        private int lifePoints;
+
+        protected Player(string name, int lifePoints)
+        {
+            this.Name = name;
+            this.LifePoints = lifePoints;
+            this.IsAlive = true;
+            this.GunRepository = new GunRepository();
+        }
+
+        public string Name
+        {
+            get => this.name;
+
+            private set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    throw new ArgumentNullException(ExceptionMessages.InvalidPlayerName);
+                }
+
+                this.name = value;
+            }
+        }
+
+        public int LifePoints
+        {
+            get => this.lifePoints;
+
+            private set
+            {
+                if (value < 0)
+                {
+                    throw new ArgumentException(ExceptionMessages.InvalidPlayerLifePoints);
+                }
+
+                this.lifePoints = value;
+            }
+        }
+
+        public IRepository<IGun> GunRepository { get; private set; }
+
+        public bool IsAlive { get; private set; }
+
+        public void TakeLifePoints(int points)
+        {
+            if (this.LifePoints - points <= 0)
+            {
+                this.LifePoints = 0;
+                this.IsAlive = false;
+            }
+            else
+            {
+                this.LifePoints -= points;
+            }
+        }
+    }
+}
+
+namespace ViceCity.Models.Players.Models
+{
+    public class MainPlayer : Player
+    {
+        private const int InitialLifePoints = 100;
+        private const string InitialName = "Tommy Vercetti";
+
+        public MainPlayer()
+            : base(InitialName, InitialLifePoints)
+        {
+        }
+    }
+}
+
+namespace ViceCity.Models.Players.Models
+{
+    public class CivilPlayer : Player
+    {
+        private const int InitialLifePoints = 50;
+
+        public CivilPlayer(string name)
+            : base(name, InitialLifePoints)
+        {
+        }
+    }
+}
+
+namespace ViceCity.Models.Guns.Models
+{
+    using System;
+    using ViceCity.Messages;
+    using ViceCity.Models.Guns.Contracts;
+
+    public abstract class Gun : IGun
+    {
+        private string name;
+        private int bulletsBarrel;
+        private int totalBullets;
+
+        protected Gun(string name, int bulletsPerBarrel, int totalBullets)
+        {
+            this.Name = name;
+            this.BulletsPerBarrel = bulletsPerBarrel;
+            this.TotalBullets = totalBullets;
+        }
+
+        public string Name
+        {
+            get => this.name;
+
+            private set
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    throw new ArgumentException(ExceptionMessages.InvalidGunName);
+                }
+
+                this.name = value;
+            }
+        }
+
+        public int BulletsPerBarrel
+        {
+            get => this.bulletsBarrel;
+
+            protected set
+            {
+                if (value < 0)
+                {
+                    throw new ArgumentException(ExceptionMessages.InvalidCountOfBullets);
+                }
+
+                this.bulletsBarrel = value;
+            }
+        }
+
+        public int TotalBullets
+        {
+            get => this.totalBullets;
+
+            protected set
+            {
+                if (value < 0)
+                {
+                    throw new ArgumentException(ExceptionMessages.InvalidTotalBullets);
+                }
+
+                this.totalBullets = value;
+            }
+        }
+
+        public bool CanFire => this.BulletsPerBarrel > 0;
+
+        public abstract int Fire();
+    }
+}
+
+namespace ViceCity.Models.Guns.Models
+{
+    public class Pistol : Gun
+    {
+        private const int InitialBulletsPerBarrel = 10;
+        private const int InitialTotalBullets = 100;
+        private const int InitialPistolDamage = 1;
+
+        public Pistol(string name)
+            : base(name, InitialBulletsPerBarrel, InitialTotalBullets)
+        {
+        }
+
+        public override int Fire()
+        {
+            if (this.BulletsPerBarrel - InitialPistolDamage <= 0 && this.TotalBullets > 0)
+            {
+                this.BulletsPerBarrel--;
+                this.BulletsPerBarrel = InitialBulletsPerBarrel;
+                this.TotalBullets -= InitialBulletsPerBarrel;
+                return InitialPistolDamage;
+            }
+
+            if (this.CanFire == true)
+            {
+                this.BulletsPerBarrel--;
+                return InitialPistolDamage;
+            }
+
+            return 0;
+        }
+    }
+}
+
+namespace ViceCity.Models.Guns.Models
+{
+    public class Rifle : Gun
+    {
+        private const int InitialBulletsPerBarrel = 50;
+        private const int InitialTotalBullets = 500;
+        private const int InitialRifelDamage = 5;
+
+        public Rifle(string name)
+            : base(name, InitialBulletsPerBarrel, InitialTotalBullets)
+        {
+        }
+
+        public override int Fire()
+        {
+            if (this.BulletsPerBarrel - InitialRifelDamage <= 0 && this.TotalBullets > 0)
+            {
+                this.BulletsPerBarrel -= InitialRifelDamage;
+                this.BulletsPerBarrel = InitialBulletsPerBarrel;
+                this.TotalBullets -= InitialBulletsPerBarrel;
+                return InitialRifelDamage;
+            }
+
+            if (this.CanFire == true)
+            {
+                this.BulletsPerBarrel -= InitialRifelDamage;
+                return InitialRifelDamage;
+            }
+
+            return 0;
+        }
+    }
+}
+
+namespace ViceCity.Models.Neghbourhoods
+{
+    using System;
+    using System.Linq;
+    using System.Collections.Generic;
+    using ViceCity.Models.Guns.Contracts;
+    using ViceCity.Models.Neghbourhoods.Contracts;
+    using ViceCity.Models.Players.Contracts;
+
+    public class GangNeighbourhood : INeighbourhood
+    {
+        public void Action(IPlayer mainPlayer, ICollection<IPlayer> civilPlayers)
+        {
+            while (true)
+            {
+                IGun gun = mainPlayer.GunRepository.Models.FirstOrDefault(g => g.CanFire == true);
+
+                if (gun == null)
+                {
+                    break;
+                }
+
+                IPlayer target = civilPlayers.FirstOrDefault(t => t.IsAlive == true);
+
+                if (target == null)
+                {
+                    break;
+                }
+
+                int damagePoints = gun.Fire();
+                target.TakeLifePoints(damagePoints);
+            }
+
+            while (true)
+            {
+                IPlayer player = civilPlayers.FirstOrDefault(t => t.IsAlive == true);
+
+                if (player == null)
+                {
+                    break;
+                }
+
+                IGun gun = player.GunRepository.Models.FirstOrDefault(g => g.CanFire == true);
+
+                if (gun == null)
+                {
+                    break;
+                }
+
+                int damagePoints = gun.Fire();
+                mainPlayer.TakeLifePoints(damagePoints);
+
+                if (mainPlayer.IsAlive == false)
+                {
+                    break;
+                }
+            }
+        }
+    }
+}
+

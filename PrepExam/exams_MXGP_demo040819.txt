@@ -1,0 +1,593 @@
+
+namespace MXGP.Core
+{
+    using MXGP.Repositories.Contracts;
+    using System;
+    using MXGP.Core.Contracts;
+    using MXGP.Models;
+    using MXGP.Models.Motorcycles;
+    using MXGP.Models.Motorcycles.Contracts;
+    using MXGP.Models.Races;
+    using MXGP.Models.Races.Contracts;
+    using MXGP.Models.Riders;
+    using MXGP.Models.Riders.Contracts;
+    using MXGP.Repositories;
+    using MXGP.Utilities.Messages;
+    using System.Linq;
+    using System.Text;
+
+    public class ChampionshipController : IChampionshipController
+    {
+        private readonly RiderRepository riderRepository;
+        private readonly MotorcycleRepository motorRepository;
+        private readonly RaceRepository raceRepository;
+
+        public ChampionshipController()
+        {
+            this.riderRepository = new RiderRepository();
+            this.motorRepository = new MotorcycleRepository();
+            this.raceRepository = new RaceRepository();
+        }
+
+        public string AddMotorcycleToRider(string riderName, string motorcycleModel)
+        {
+            var rider = this.riderRepository.GetByName(riderName);
+            var motorcycle = this.motorRepository.GetByName(motorcycleModel);
+
+            if (rider == null)
+            {
+                throw new InvalidOperationException(string.Format(ExceptionMessages.RiderNotFound, riderName));
+            }
+
+            if (motorcycle == null)
+            {
+                throw new InvalidOperationException(string.Format(ExceptionMessages.MotorcycleNotFound, motorcycleModel));
+            }
+
+            rider.AddMotorcycle(motorcycle);
+
+            string result = string.Format(OutputMessages.MotorcycleAdded,
+                rider.Name, 
+                motorcycle.Model);
+
+            return result;
+        }
+
+        public string AddRiderToRace(string raceName, string riderName)
+        {
+            var race = this.raceRepository.GetByName(raceName);
+            if (race == null)
+            {
+                throw new InvalidOperationException(string.Format(ExceptionMessages.
+                    RaceNotFound,
+                    raceName));
+            }
+
+            var rider = this.riderRepository.GetByName(riderName);
+
+            if (rider == null)
+            {
+                throw new InvalidOperationException(string.Format(ExceptionMessages.RiderNotFound, riderName));
+            }
+
+            race.AddRider(rider);
+
+            string result = string.Format(OutputMessages.RiderAdded,
+                rider.Name,
+                race.Name);
+
+            return result;
+
+        }
+
+        public string CreateMotorcycle(string type, string model, int horsePower)
+        {
+            var motorcycle = this.motorRepository.GetByName(model);
+            if (motorcycle != null)
+            {
+                throw new ArgumentException(string.Format(ExceptionMessages.MotorcycleExists,
+                    model));
+            }
+
+            if (type == "Power")
+            {
+                motorcycle = new PowerMotorcycle(model, horsePower);
+            }
+            else if (type == "Speed")
+            {
+                motorcycle = new SpeedMotorcycle(model, horsePower);
+            }
+
+            motorRepository.Add(motorcycle);
+
+            string result = string.Format(OutputMessages.MotorcycleCreated,
+                motorcycle.GetType().Name,
+                motorcycle.Model);
+
+            return result;
+        }
+
+        public string CreateRace(string name, int laps)
+        {
+            var race = this.raceRepository.GetByName(name);
+            if (race != null)
+            {
+                throw new InvalidOperationException(string.Format(ExceptionMessages.RaceExists, name));
+            }
+
+            race = new Race(name, laps);
+            this.raceRepository.Add(race);
+
+            string result = string.Format(OutputMessages.RaceCreated,
+                race.Name);
+
+            return result;
+        }
+
+        public string CreateRider(string riderName)
+        {
+            if (this.riderRepository.GetByName(riderName) != null)
+            {
+                throw new ArgumentException(string.Format(ExceptionMessages.RiderExists, riderName));                    
+            }
+
+            IRider rider = new Rider(riderName);
+            this.riderRepository.Add(rider);
+
+            string result = string.Format(OutputMessages.RiderCreated,
+                riderName);
+            return result;
+        }
+
+        public string StartRace(string raceName)
+        {
+            var race = this.raceRepository.GetByName(raceName);
+            if (race == null)
+            {
+                throw new InvalidOperationException(string.Format(ExceptionMessages.RaceNotFound, raceName));
+            }
+
+            if (race.Riders.Count<3)
+            {
+                throw new InvalidOperationException(string.Format(ExceptionMessages.RiderInvalid,raceName, 3));
+            }
+
+            var riders123 = race.Riders.OrderByDescending(x => x.Motorcycle.CalculateRacePoints(race.Laps))
+                .Take(3)
+                .ToList();
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine(string.Format(OutputMessages.RiderFirstPosition, riders123[0].Name, race.Name));
+            sb.AppendLine(string.Format(OutputMessages.RiderSecondPosition, riders123[1].Name, race.Name));
+            sb.AppendLine(string.Format(OutputMessages.RiderThirdPosition, riders123[2].Name, race.Name));
+
+
+            this.raceRepository.Remove(race);
+
+            return sb.ToString().TrimEnd();
+        }
+              
+    }
+}
+
+BASE:
+namespace MXGP.Models.Motorcycles
+{
+    using MXGP.Models.Motorcycles.Contracts;
+    using MXGP.Utilities.Messages;
+    using System;
+
+    public abstract class Motorcycle : IMotorcycle
+    {
+        private const int MinModelLength = 4;
+        private string model;
+        
+        protected Motorcycle(string model, int horsePower, double cubicCentimeters)
+        {
+            this.Model = model;
+            this.HorsePower = horsePower;
+            this.CubicCentimeters = cubicCentimeters;
+        }
+
+        public string Model
+        {
+            get => this.model;
+
+            private set
+            {
+                if (string.IsNullOrWhiteSpace(value) || value.Length < 4)
+                {
+                    throw new ArgumentException(string.Format(ExceptionMessages.InvalidModel, 
+                        value, 
+                        MinModelLength));
+                }
+                this.model = value;
+            }
+        }
+
+        public virtual int HorsePower { get; protected set; }
+
+        public double CubicCentimeters { get; private set; }
+        
+        public double CalculateRacePoints(int laps)
+        {
+            return this.CubicCentimeters / this.HorsePower * laps;
+        }        
+    }
+}
+
+SUBCLASS:
+namespace MXGP.Models
+{
+    using System;
+    using MXGP.Models.Motorcycles;
+
+    public class PowerMotorcycle : Motorcycle
+    {
+        private const double CubicCentimetres = 450.0;
+        private const int HorsepowerMin = 70;
+        private const int HorsePowerMax = 100;
+
+        public PowerMotorcycle(string model, int horsePower)
+            : base(model, horsePower, CubicCentimetres)
+        {           
+        }
+
+        public override int HorsePower
+        {
+            get => base.HorsePower;
+            protected set
+            {
+                if (value < HorsepowerMin || value > HorsePowerMax)
+                {
+                    throw new ArgumentException($"Invalid horse power: {value}.");
+                }
+                base.HorsePower = value;
+            }
+        }
+    }
+}
+
+
+namespace MXGP.Models.Motorcycles
+{
+    using MXGP.Utilities.Messages;
+    using System;
+    public class SpeedMotorcycle : Motorcycle
+    {
+        private const double CubicCentimetres = 125;
+        private const int HorsepowerMin = 50;
+        private const int HorsePowerMax = 69;
+
+        public SpeedMotorcycle(string model, int horsePower)
+            : base(model, horsePower, CubicCentimetres)
+        {            
+        }
+
+        public override int HorsePower
+        {
+            get => base.HorsePower;
+            protected set
+            {
+                if (value < HorsepowerMin || value > HorsePowerMax)
+                {
+                    throw new ArgumentException(string.Format(ExceptionMessages.InvalidHorsePower,
+                        value));
+                }
+                base.HorsePower = value;
+            }
+        }
+    }
+}
+
+namespace MXGP.Models.Riders
+{
+    using MXGP.Models.Motorcycles.Contracts;
+    using MXGP.Models.Riders.Contracts;
+    using MXGP.Utilities.Messages;
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
+
+    public class Rider : IRider
+    {
+        private string name;
+
+        public Rider(string name)
+        {
+            this.Name = name;
+        }
+
+        public string Name
+        {
+            get => this.name;
+            private set
+            {
+                if (string.IsNullOrEmpty(value) || value.Length < 5)
+                {
+                    throw new ArgumentException(string.Format(ExceptionMessages.InvalidName, value, 5));
+                }
+                this.name = value;
+            }
+        }
+
+        public IMotorcycle Motorcycle { get; private set; }
+
+        public int NumberOfWins {get; private set;}
+
+        public bool CanParticipate => this.Motorcycle!=null;
+
+        public void AddMotorcycle(IMotorcycle motorcycle)
+        {
+            if (motorcycle== null)
+            {
+                throw new ArgumentException(ExceptionMessages.MotorcycleInvalid);
+            }
+            this.Motorcycle = motorcycle;
+        }
+
+        public void WinRace() => this.NumberOfWins += 1;
+        
+    }
+}
+
+namespace MXGP.Models.Races
+{
+    using MXGP.Models.Races.Contracts;
+    using MXGP.Models.Riders;
+    using MXGP.Models.Riders.Contracts;
+    using MXGP.Utilities.Messages;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
+    public class Race : IRace
+    {
+        private string name;
+        private int laps;
+        private readonly List<IRider> riders;
+
+        public Race(string name, int laps)
+        {
+            this.Name = name;
+            this.Laps = laps;
+            this.riders = new List<IRider>();
+        }
+
+        public string Name
+        {
+            get => this.name;
+            private set
+            {
+                if (string.IsNullOrEmpty(value) || value.Length < 5)
+                {
+                    throw new ArgumentException(string.Format(ExceptionMessages.InvalidName,
+                        value,
+                        5));
+                }
+                this.name = value;
+            }
+        }
+        public int Laps
+        {
+            get => this.laps;
+            private set
+            {
+                if (value < 1)
+                {
+                    throw new ArgumentException(string.Format(ExceptionMessages.InvalidNumberOfLaps,
+                        1));
+                }
+                this.laps = value;
+            }
+        }
+        public IReadOnlyCollection<IRider> Riders => this.riders.AsReadOnly();
+
+        public void AddRider(IRider rider)
+        {
+            if (rider == null)
+            {
+                throw new ArgumentNullException(ExceptionMessages.RiderNotFound);
+            }
+
+            if (rider.Motorcycle == null)
+            {
+                throw new ArgumentException(string.Format(ExceptionMessages.RiderNotParticipate, rider.Name));
+            }
+
+            if (riders.Any(r => r.Name == rider.Name))
+            {
+                throw new ArgumentNullException(string.Format(ExceptionMessages.RiderAlreadyAdded, rider.Name, this.Name));
+            }
+            this.riders.Add((Rider)rider);
+        }
+    }
+}
+
+Interface IRepository<T>
+
+namespace MXGP.Repositories.Contracts
+{
+    using System.Collections.Generic;
+
+    public interface IRepository<T>
+    {
+        T GetByName(string name);
+
+        IReadOnlyCollection<T> GetAll();
+
+        void Add(T model);
+
+        bool Remove(T model);
+    }
+}
+
+namespace MXGP.Repositories
+{
+    using MXGP.Models.Motorcycles.Contracts;
+    using MXGP.Repositories.Contracts;
+    using System.Collections.Generic;
+    using System.Linq;
+
+    public class MotorcycleRepository : IRepository<IMotorcycle>
+    {
+        private readonly List<IMotorcycle> models;
+        public MotorcycleRepository()
+        {
+            this.models = new List<IMotorcycle>();
+        }
+        public void Add(IMotorcycle model)
+        {
+            this.models.Add(model);
+        }
+
+        public IReadOnlyCollection<IMotorcycle> GetAll()
+        {
+            return this.models.AsReadOnly();
+        }
+
+        public IMotorcycle GetByName(string name)
+        {
+            return this.models.FirstOrDefault(x => x.Model == name);
+        }
+
+        public bool Remove(IMotorcycle model)
+        {            
+            return this.models.Remove(model);
+        }
+    }
+}
+
+namespace MXGP.Repositories
+{
+    using MXGP.Models.Races.Contracts;
+    using MXGP.Repositories.Contracts;
+    using System.Collections.Generic;
+    using System.Linq;
+
+    public class RaceRepository : IRepository<IRace>
+    {
+        private readonly List<IRace> models;
+        public RaceRepository()
+        {
+            this.models = new List<IRace>();
+        }
+        public void Add(IRace model)
+        {
+            this.models.Add(model);
+        }
+
+        public IReadOnlyCollection<IRace> GetAll()
+        {
+            return this.models.AsReadOnly();
+        }
+
+        public IRace GetByName(string name)
+        {
+            return this.models.FirstOrDefault(x => x.Name == name);
+        }
+
+        public bool Remove(IRace model)
+        {
+
+            return this.models.Remove(model);
+        }
+    }
+}
+
+namespace MXGP.Repositories
+{
+    using MXGP.Models.Riders.Contracts;
+    using MXGP.Repositories.Contracts;
+    using System.Collections.Generic;
+    using System.Linq;
+    public class RiderRepository : IRepository<IRider>
+    {
+        private readonly List<IRider> models;
+        public RiderRepository()
+        {
+            this.models = new List<IRider>();
+        }
+        public void Add(IRider model)
+        {
+            this.models.Add(model);
+        }
+
+        public IReadOnlyCollection<IRider> GetAll()
+        {
+            return this.models.AsReadOnly();
+        }
+
+        public IRider GetByName(string name)
+        {
+            return this.models.FirstOrDefault(x => x.Name == name);
+        }
+
+        public bool Remove(IRider model)
+        {
+            return this.models.Remove(model);
+        }
+    }
+}
+
+namespace MXGP.Utilities.Messages
+{
+    public static class ExceptionMessages
+    {
+        public const string InvalidModel = "Model {0} cannot be less than {1} symbols.";
+     
+        public const string InvalidName = "Name {0} cannot be less than {1} symbols.";
+  
+        public const string InvalidHorsePower = "Invalid horse power: {0}.";
+    
+        public const string InvalidNumberOfLaps = "Laps cannot be less than {0}.";
+
+        public const string RiderExists = "Rider {0} is already created.";
+        
+        public const string RiderAlreadyAdded = "Rider {0} is already added in {1} race.";
+               
+        public const string RiderNotFound = "Rider {0} could not be found.";
+               
+        public const string RiderNotParticipate = "Rider {0} could not participate in race.";
+            
+        public const string RiderInvalid = "Racer cannot be null.";
+           
+        public const string MotorcycleExists = "Motorcycle {0} is already create.";
+       
+        public const string MotorcycleInvalid = "Motorcycle cannot be null.";
+     
+        public const string MotorcycleNotFound = "Motorcycle {0} could not be found.";
+
+        public const string MotorcycleMustBeNull = "Motorcycle must to be null.";
+         
+        public const string RaceNotFound = "Race {0} could not be found.";
+      
+        public const string RaceExists = "Race {0} is already created.";
+    
+        public const string RaceInvalid = "Race {0} cannot start with less than {1} participants.";
+    }
+}
+
+namespace MXGP.Utilities.Messages
+{
+    public static class OutputMessages
+    {
+        public const string MotorcycleCreated = "{0} {1} is created.";
+                    
+        public const string MotorcycleAdded = "Rider {0} received motorcycle {1}.";
+                   
+        public const string MotorcycleReplaced = "Rider {0} replaced motorcycle {1}.";
+                     
+        public const string RiderCreated = "Rider {0} is created.";
+                    
+        public const string RiderAdded = "Rider {0} added in {1} race.";
+                   
+        public const string RiderFirstPosition = "Rider {0} wins {1} race.";
+                   
+        public const string RiderSecondPosition = "Rider {0} is second in {1} race.";
+                   
+        public const string RiderThirdPosition = "Rider {0} is third in {1} race.";
+                
+        public const string RaceCreated = "Race {0} is created.";
+    }
+}

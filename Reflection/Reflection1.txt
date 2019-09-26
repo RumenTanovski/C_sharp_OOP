@@ -1,0 +1,467 @@
+Lab1 
+Bez namespase sa 
+
+using System;
+
+    public class StartUp
+    {
+        private static void Main(string[] args)
+        {
+            Spy spy = new Spy();
+            string result = spy.StealFieldInfo("Hacker", "username", "password");
+            Console.WriteLine(result);
+        }
+    }
+
+
+using System;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+
+    public class Spy
+    {
+        public string StealFieldInfo(string investogatedClass
+            , params string[] requestedFields)
+        {
+            Type classType = Type.GetType(investogatedClass);
+
+            FieldInfo[] classFields = classType.GetFields(BindingFlags.Instance 
+                | BindingFlags.Static
+                | BindingFlags.NonPublic 
+                | BindingFlags.Public);
+
+            StringBuilder stringBuilder = new StringBuilder();
+
+            Object classInstance = Activator.CreateInstance(classType, new object[] { });
+
+            stringBuilder.AppendLine($"Class under investigation: {investogatedClass}");
+
+            foreach (FieldInfo field in classFields.Where(f=> requestedFields.Contains(f.Name)))
+            {
+                stringBuilder.AppendLine($"{field.Name} = {field.GetValue(classInstance)}");
+            }
+            return stringBuilder.ToString().Trim();
+        }
+    }
+
+public class Hacker
+    {
+        public string username = "securityGod82";
+        private string password = "mySuperSecretPassw0rd";
+
+        public string Password
+        {
+            get => this.password;
+            set => this.password = value;
+        }
+
+        private int Id { get; set; }
+
+        public double BankAccountBalance { get; private set; }
+
+        public void DownloadAllBankAccountsInTheWorld()
+        {
+        }
+    }
+
+
+Lab2
+
+using System;
+
+    public class StartUp
+    {
+        private static void Main(string[] args)
+        {
+            Spy spy = new Spy();
+            string result = spy.AnalyzeAcessModifiers("Hacker");
+            Console.WriteLine(result);
+
+        }
+    }
+	
+	
+ public class Hacker
+    {
+        public string username = "securityGod82";
+        private string password = "mySuperSecretPassw0rd";
+
+        public string Password
+        {
+            get => this.password;
+            set => this.password = value;
+        }
+
+        private int Id { get; set; }
+
+        public double BankAccountBalance { get; private set; }
+
+        public void DownloadAllBankAccountsInTheWorld()
+        {
+        }
+    }
+	
+using System;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+
+public class Spy
+{
+    public string AnalyzeAcessModifiers(string investigatedClass)
+    {
+        Type classType = Type.GetType(investigatedClass);
+
+        FieldInfo[] fields = classType.GetFields(BindingFlags.Instance |
+            BindingFlags.Static |
+            BindingFlags.Public);
+
+        MethodInfo[] publicMethods = classType.GetMethods(BindingFlags.Instance |
+            BindingFlags.Public);
+
+        MethodInfo[] privateMethods = classType.GetMethods(BindingFlags.Instance |
+            BindingFlags.NonPublic);
+
+        StringBuilder sb = new StringBuilder();
+
+        foreach (var field in fields)
+        {
+            sb.AppendLine($"{field.Name} must be private!");
+        }
+        foreach (var publicMethod in privateMethods.Where(s => s.Name.StartsWith("get")))
+        {
+            sb.AppendLine($"{publicMethod.Name} have to be public!");
+        }
+        foreach (var publicMethod in publicMethods.Where(s => s.Name.StartsWith("set")))
+        {
+            sb.AppendLine($"{publicMethod.Name} have to be private!");
+        }
+
+        return sb.ToString().Trim();
+    }
+}
+
+Lab3
+using System;
+
+    public class StartUp
+    {
+        private static void Main(string[] args)
+        {
+            Spy spy = new Spy();
+            string result = spy.RevealPrivateMethods("Hacker");
+            Console.WriteLine(result);
+        }
+    }	
+	
+	using System;
+using System.Reflection;
+using System.Text;
+
+public class Spy
+{
+    public string RevealPrivateMethods(string investigatedClass)
+    {
+        Type classType = Type.GetType(investigatedClass);
+
+        MethodInfo[] privateMethods = classType.GetMethods(BindingFlags.Instance
+            | BindingFlags.NonPublic);
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.AppendLine($"All Private Methods of Class: {investigatedClass}");
+        sb.AppendLine($"Base Class: {classType.BaseType.Name}");
+
+        foreach (var privateMethod in privateMethods)
+        {
+            sb.AppendLine(privateMethod.Name);
+        }
+
+        return sb.ToString().Trim();
+    }
+}
+
+Lab4
+using System;
+
+    public class StartUp
+    {
+        private static void Main(string[] args)
+        {
+            Spy spy = new Spy();
+            string result = spy.CollectGettersAndSetters("Hacker");
+            Console.WriteLine(result);
+        }
+    }
+
+using System;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+
+public class Spy
+{
+    public string CollectGettersAndSetters(string investigatedClass)
+    {
+        Type classType = Type.GetType(investigatedClass);
+
+        MethodInfo[] methods = classType.GetMethods(BindingFlags.Instance |
+            BindingFlags.Static |
+            BindingFlags.NonPublic |
+            BindingFlags.Public);
+
+        StringBuilder sb = new StringBuilder();
+
+        foreach (var method in methods.Where(m => m.Name.StartsWith("get")))
+        {
+            sb.AppendLine($"{method.Name} will return {method.ReturnType}");
+        }
+
+        foreach (var method in methods.Where(m => m.Name.StartsWith("set")))
+        {
+            sb.AppendLine($"{method.Name} will set field of {method.GetParameters().First().ParameterType}");
+        }
+
+        return sb.ToString().Trim();
+    }
+}
+
+Lab 5
+using System;
+[Author ("Ventsi")]
+    class StartUp
+    {
+    [Author("Gosho")]
+        static void Main(string[] args)
+        {
+            
+        }
+    }
+
+using System;
+
+[AttributeUsage(AttributeTargets.Class
+    | AttributeTargets.Method, AllowMultiple = true)]
+
+public class AuthorAttribute : Attribute
+{
+    public AuthorAttribute(string name)
+    {
+        this.Name = name;
+    }
+    public string Name { get; set; }
+}
+
+
+Lab6
+[Author ("Ventsi")]
+    class StartUp
+    {
+    [Author("Gosho")]
+        static void Main(string[] args)
+        {
+        var tracker = new Tracker();
+        tracker.PrintMethodByAuthor();
+        }
+    }
+
+using System;
+
+[AttributeUsage(AttributeTargets.Class
+    | AttributeTargets.Method, AllowMultiple = true)]
+
+public class AuthorAttribute : Attribute
+{
+    public AuthorAttribute(string name)
+    {
+        this.Name = name;
+    }
+    public string Name { get; set; }
+}
+
+using System;
+using System.Linq;
+using System.Reflection;
+
+public class Tracker
+{
+    public void PrintMethodByAuthor()
+    {
+        var type = typeof(StartUp);
+        MethodInfo[] methods = type.GetMethods(BindingFlags.Instance
+            | BindingFlags.Public
+            | BindingFlags.Static);
+
+        foreach (var method in methods)
+        {
+            if (method.CustomAttributes.Any(a => a.AttributeType == typeof(AuthorAttribute)))
+            {
+                var attributes = method.GetCustomAttributes(false);
+
+                foreach (AuthorAttribute attribute in attributes)
+                {
+                    Console.WriteLine($"{ method.Name} is written by {attribute.Name}");
+                }
+            }
+        }
+    }
+}
+
+
+Problem 1 CommandPattern
+
+using CommandPattern.Core;
+using CommandPattern.Core.Contracts;
+
+namespace CommandPattern
+{
+    public class StartUp
+    {
+        public static void Main(string[] args)
+        {
+            ICommandInterpreter command = new CommandInterpreter();
+            IEngine engine = new Engine(command);
+            engine.Run();
+        }
+    }
+}
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace CommandPattern.Core.Contracts
+{
+    public interface IEngine
+    {
+        void Run();
+    }
+}
+
+namespace CommandPattern.Core.Contracts
+{
+    public interface ICommand
+    {
+        string Execute(string[] args);
+    }
+}
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace CommandPattern.Core.Contracts
+{
+    public interface ICommandInterpreter
+    {
+        string Read(string inputLine);
+    }
+}
+
+using CommandPattern.Core.Contracts;
+using System;
+
+namespace CommandPattern.Core
+{
+    public class Engine : IEngine
+    {
+        private readonly ICommandInterpreter
+            commandInterpreter;
+
+        public Engine(ICommandInterpreter 
+            commandInterpreter)
+        {
+            this.commandInterpreter =
+                commandInterpreter;
+        }
+        public void Run()
+        {
+            while (true)
+            {
+            string commandLine =
+                Console.ReadLine();
+
+                string result = this.commandInterpreter
+                    .Read(commandLine);
+
+                Console.WriteLine(result);
+            }
+        }
+    }
+}
+
+using CommandPattern.Core.Contracts;
+using System;
+using System.Linq;
+using System.Reflection;
+
+namespace CommandPattern.Core
+{
+    public class CommandInterpreter : ICommandInterpreter
+    {
+        public const string  COMMAND_POSTFIX = "Command";
+
+        public string Read(string inputLine)
+        {
+            string[] cmdTokens = inputLine
+                .Split(" ", System.StringSplitOptions
+                .RemoveEmptyEntries)
+                .ToArray();
+
+            string commandName = cmdTokens[0] 
+                + COMMAND_POSTFIX;
+
+            string[] commandArgs = cmdTokens
+                .Skip(1)
+                .ToArray();
+
+            Assembly assembly = Assembly
+                .GetCallingAssembly();
+				
+            Type[] types = assembly
+                .GetTypes();
+				
+            Type typeToCreate = types
+                .FirstOrDefault(t => t.Name == commandName);
+
+            Object instance =
+                Activator.CreateInstance(typeToCreate);
+				
+            ICommand command = (ICommand)instance;
+			
+            string result = command.Execute(commandArgs);
+
+            return result;
+        }
+    }
+}
+
+using CommandPattern.Core.Contracts;
+
+namespace CommandPattern.Core.Commands
+{
+    public class HelloCommand : ICommand
+    {
+        public string Execute(string[] args)
+        {
+            return $"Hello, {args[0]}";
+        }
+    }
+}
+
+using CommandPattern.Core.Contracts;
+using System;
+
+namespace CommandPattern.Core.Commands
+{
+    public class ExitCommand : ICommand
+    {
+        public string Execute(string[] args)
+        {
+            Environment.Exit(0);
+            return null;
+        }
+    }
+}
+

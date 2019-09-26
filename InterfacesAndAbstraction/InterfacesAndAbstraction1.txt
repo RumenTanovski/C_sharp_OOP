@@ -1,0 +1,1418 @@
+
+Lab1 Shapes
+using System;
+
+namespace Shapes
+{
+    public class StartUp
+    {
+        static void Main(string[] args)
+        {
+            var radius = int.Parse(Console.ReadLine());
+            IDrawable circle = new Circle(radius);
+
+            var width = int.Parse(Console.ReadLine());
+            var height = int.Parse(Console.ReadLine());
+            IDrawable rect = new Rectangle(width, height);
+
+            circle.Draw();
+            rect.Draw();
+        }
+    }
+}
+
+namespace Shapes
+{
+    public interface IDrawable
+    {
+        void Draw();
+    }
+}
+
+using System;
+
+namespace Shapes
+{
+    public class Circle : IDrawable
+    {
+        private int radius;
+
+        public Circle(int radius)
+        {
+            this.Radius = radius;
+        }
+        public int Radius
+        {
+            get
+            {
+                return this.radius;
+            }
+            private set
+            {
+                this.radius = value;
+            }
+        }
+
+        public void Draw()
+        {
+            double rIn = this.radius - 0.4;
+            double rOut = this.radius + 0.4;
+
+            for (double  y = this.radius; y >= -this.radius; --y)
+            {
+                for (double x = -this.radius; x < rOut; x+= 0.5)
+                {
+                    double value = x * x + y * y;
+                    if (value >= rIn*rIn && value <=rOut*rOut)
+                    {
+                        Console.Write("*");
+                    }
+                    else
+                    {
+                        Console.Write(" ");
+                    }
+                }
+                Console.WriteLine();
+            }
+        }
+    }
+}
+
+using System;
+
+namespace Shapes
+{
+    class Rectangle : IDrawable
+    {
+        private int width;
+        private int height;
+
+        public Rectangle(int width, int height)
+        {
+            this.Height = height;
+            this.Width = width;
+        }
+
+        public int Width
+        {
+            get
+            {
+                return this.width;
+            }
+            private set
+            {
+                this.width = value;
+            }
+        }
+
+        public int Height
+        {
+            get
+            {
+                return this.height;
+            }
+            private set
+            {
+                this.height = value;
+            }
+        }
+
+
+        public void Draw()
+        {
+            DrawLine(this.width, '*', '*');
+            for (int i = 0; i < this.height-1; ++i)
+            {
+                DrawLine(this.width, '*', ' ');
+            }
+            DrawLine(this.width, '*', '*');
+        }
+
+        private void DrawLine(int width, char end, char mid)
+        {
+            Console.Write(end);
+            for (int i = 1; i < width-1; ++i)
+            {
+                Console.Write(mid);
+            }
+            Console.WriteLine(end);
+        }
+    }
+}
+
+
+Lab2 Cars
+using System;
+
+namespace Cars
+{
+    public class StartUp
+    {
+        static void Main(string[] args)
+        {
+            ICar seat = new Seat("Leon", "Grey") ;
+            ICar tesla = new Tesla("Model 3", "Red", 2);
+
+            Console.WriteLine(seat.ToString());
+            Console.WriteLine(tesla.ToString());
+        }
+    }
+}
+
+namespace Cars
+{
+    public interface ICar
+    {
+        string Model { get; }
+        string Color { get; }
+
+        string Start();
+        string Stop();
+    }
+}
+
+namespace Cars
+{
+    public interface IElectricCar
+    {
+        int Battery { get; }
+    }
+}
+
+using System;
+using System.Text;
+
+namespace Cars
+{
+    public class Seat : ICar
+    {
+        private string model;
+        private string color;
+
+        public Seat(string model, string color)
+        {
+            this.Model = model;
+            this.Color = color;
+        }
+
+        public string Model
+        {
+            get
+            {
+                return this.model;
+            }
+            private set
+            {
+                this.model = value;
+            }
+        }
+
+        public string Color
+        {
+            get
+            {
+                return this.color;
+            }
+            private set
+            {
+                this.color = value;
+            }
+        }
+
+        public string Start()
+        {
+            return "Engine start";
+        }
+
+        public string Stop()
+        {
+            return "Breaaak!";
+        }
+
+        public override string ToString()
+        {
+            StringBuilder result = new StringBuilder();
+            result.AppendLine($"{this.color} {this.GetType().Name} {this.model}")
+                .AppendLine(Start())
+                .AppendLine(Stop());
+            return result.ToString();
+        }
+    }
+}
+
+using System.Text;
+
+namespace Cars
+{
+    public class Tesla : ICar, IElectricCar
+    {
+        private string model;
+        private string color;
+        private int battery;
+
+        public Tesla(string model, string color, int battery)
+        {
+            this.Model = model;
+            this.Color = color;
+            this.Battery = battery;
+        }
+
+        public string Model
+        {
+            get
+            {
+                return this.model;
+            }
+            private set
+            {
+                this.model = value;
+            }
+        }
+
+        public string Color
+        {
+            get
+            {
+                return this.color;
+            }
+            private set
+            {
+                this.color = value;
+            }
+        }
+
+        public int Battery
+        {
+            get
+            {
+                return this.battery;
+            }
+            private set
+            {
+                this.battery = value;
+            }
+        }
+
+                     
+
+        public string Start()
+        {
+            return "Engine start";
+        }
+
+        public string Stop()
+        {
+            return "Breaaak!";
+        }
+
+        public override string ToString()
+        {
+            StringBuilder result = new StringBuilder();
+            result.AppendLine($"{this.color} {this.GetType().Name} {this.model}")
+                .AppendLine(Start())
+                .AppendLine(Stop());
+            return result.ToString();
+        }
+    }
+}
+
+Problem1 Define An Interface
+
+using System;
+
+namespace PersonInfo
+{
+    public class StartUp
+    {
+        public static void Main(string[] args)
+        {
+            string name = Console.ReadLine();
+            int age = int.Parse(Console.ReadLine());
+            IPerson person = new Citizen(name, age);
+            Console.WriteLine(person.Name);
+            Console.WriteLine(person.Age);
+        }
+    }
+}
+
+
+namespace PersonInfo
+{
+    public interface IPerson
+    {
+        string Name { get; }
+        int Age { get; }
+    }
+}
+
+namespace PersonInfo
+{
+    public class Citizen : IPerson
+    {
+        private string name;
+        private int age;
+
+        public Citizen(string name, int age)
+        {
+            this.Name = name;
+            this.Age = age;
+        }
+
+        public string Name
+        {
+            get
+            {
+                return this.name;
+            }
+            private set
+            {
+                this.name = value;
+            }
+        }
+
+        public int Age
+        {
+            get
+            {
+                return this.age;
+            }
+            private set
+            {
+                this.age = value;
+            }
+        }
+    }
+}
+
+
+Problem2 Multiple Implementation
+
+using System;
+
+namespace PersonInfo
+{
+    public class StartUp
+    {
+        static void Main(string[] args)
+        {
+            string name = Console.ReadLine();
+            int age = int.Parse(Console.ReadLine());
+            string id = Console.ReadLine();
+            string birthdate = Console.ReadLine();
+            IIdentifiable identifiable = new Citizen(name, age, id, birthdate);
+            IBirthable birthable = new Citizen(name, age, id, birthdate);
+            Console.WriteLine(identifiable.Id);
+            Console.WriteLine(birthable.Birthdate);
+        }
+    }
+}
+
+namespace PersonInfo
+{
+    public interface IBirthable
+    {
+        string Birthdate { get; }
+    }
+}
+
+namespace PersonInfo
+{
+    public interface IIdentifiable
+    {
+        string Id { get; }
+    }
+}
+
+namespace PersonInfo
+{
+    public interface IPerson
+    {
+        string Name { get; }
+        int Age { get; }
+    }
+}
+
+namespace PersonInfo
+{
+    public class Citizen : IPerson, IIdentifiable,IBirthable
+    {
+        private string name;
+        private int age;
+        private string id;
+        private string birthdate;
+
+        public Citizen(string name, int age, string id, string birthdate)
+        {
+            this.Name = name;
+            this.Age = age;
+            this.Id = id;
+            this.Birthdate = birthdate;
+        }
+
+        public string Name
+        {
+            get
+            {
+                return this.name;
+            }
+            private set
+            {
+                this.name = value;
+            }
+        }
+
+        public int Age
+        {
+            get
+            {
+                return this.age;
+            }
+            private set
+            {
+                this.age = value;
+            }
+        }
+
+        public string Id
+        {
+            get
+            {
+                return this.id;
+            }
+            private set
+            {
+                this.id = value;
+            }
+        }
+
+        public string Birthdate
+        {
+            get
+            {
+                return this.birthdate;
+            }
+            private set
+            {
+                this.birthdate= value;
+            }
+        }
+    }
+}
+
+
+Problem3 Ferrari
+
+using System;
+
+namespace Ferrari
+{
+    public class StartUp
+    {
+        static void Main(string[] args)
+        {
+            string driverName = Console.ReadLine();
+
+            Ferrari ferrari = new Ferrari(driverName);
+
+            Console.WriteLine(ferrari.ToString());
+        }
+    }
+}
+
+
+namespace Ferrari
+{
+    public interface ICars
+    {
+        string UseBrakes();
+        string PushTheGasPedal();
+    }
+}
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Ferrari
+{
+    public class Ferrari : ICars
+    {
+        private string driver;
+        public const string MODEL = "488-Spider";
+
+        public Ferrari(string driver)
+        {
+            this.Driver = driver;   
+        }
+
+        public string Driver
+        {
+            get
+            {
+                return this.driver;
+            }
+            private set
+            {
+                this.driver = value;
+            }
+        }
+
+        public string PushTheGasPedal()
+        {
+            return "Gas!";
+        }
+
+        public string UseBrakes()
+        {
+            return "Brakes!";
+        }
+
+        public override string ToString()
+        {
+            return $"{MODEL}/{UseBrakes()}/{PushTheGasPedal()}/{this.driver}";
+        }
+    }
+}
+
+Problem 4 Telephony
+using Telephony.Core;
+
+namespace Telephony
+{
+    public class StartUp
+    {
+        public static void Main(string[] args)
+        {
+            Engine engine = new Engine();
+            engine.Run();
+        }
+    }
+}
+
+using System;
+using System.Linq;
+
+using Telephony.Exceptions;
+
+namespace Telephony.Core
+{
+    public class Engine
+    {
+        private Smartphone smartphone;
+
+        public Engine()
+        {
+            this.smartphone = new Smartphone();
+        }
+
+        public void Run()
+        {
+
+            string[] numbers = Console.ReadLine()
+               .Split(" ")
+               .ToArray();
+
+            string[] urls = Console.ReadLine()
+               .Split(" ")
+               .ToArray();
+
+            CallNumbers(numbers);
+            BrowsInternet(urls);
+
+        }
+
+        private void BrowsInternet(string[] urls)
+        {
+            foreach (var url in urls)
+            {
+                try
+                {
+                Console.WriteLine(this.smartphone.Browsing(url));
+                }
+                catch (InvalidURLExceptions iurle)
+                {
+                    Console.WriteLine(iurle.Message);
+                }
+            }
+        }
+        private void CallNumbers(string[] numbers)
+        {
+            foreach (var number in numbers)
+            {
+                try
+                {
+                Console.WriteLine(this.smartphone.Calling(number));
+                }
+                catch (InvalidPhoneNumberException ipne)
+                {
+
+                    Console.WriteLine(ipne.Message);
+                }
+            }
+        }
+    }
+}
+
+namespace Telephony
+{
+    public interface IBrowseable
+    {
+        string Browsing(string url);
+    }
+}
+
+namespace Telephony
+{
+    public interface ICallable
+    {
+        string Calling(string number);
+    }
+}
+
+using System;
+using System.Linq;
+
+using Telephony.Exceptions;
+
+namespace Telephony
+{
+    public class  Smartphone : ICallable, IBrowseable
+    {
+        public Smartphone()
+        {
+
+        }
+        public string Calling(string number)
+        {
+            if (!number.All(c=> Char.IsDigit(c)))
+            {
+                throw new InvalidPhoneNumberException();
+            }
+
+            return $"Calling... {number}";
+        }
+
+        public string Browsing(string url )
+        {
+            if (url.Any(c => Char.IsDigit(c)))
+            {
+                throw new InvalidURLExceptions();
+            }
+
+            return $"Browsing: {url}!";
+        }
+    }
+}
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Telephony.Exceptions
+{
+    public class InvalidPhoneNumberException : Exception
+    {
+        private const string EXC_MESSAGE = 
+            "Invalid number!";
+
+        public InvalidPhoneNumberException()
+            :base(EXC_MESSAGE)
+        {
+
+        }
+
+        public InvalidPhoneNumberException(string message)
+            :base(message)
+        {
+                
+        }
+    }
+}
+
+using System;
+
+namespace Telephony.Exceptions
+{
+    public class InvalidURLExceptions : Exception
+    {
+        private const string EXC_MESSAGE =
+            "Invalid URL!";
+
+        public InvalidURLExceptions()
+            :base(EXC_MESSAGE)
+        {
+
+        }
+
+        public InvalidURLExceptions(string message)
+            :base(message)
+        {
+
+        }
+    }
+}
+
+
+Problem 5 Border Control
+
+using BorderControl.Core;
+using System;
+
+namespace BorderControl
+{
+    public class StartUp
+    {
+        public static void Main(string[] args)
+        {
+            Engine engine = new Engine();
+            engine.Run();              
+        }
+    }
+}
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using BorderControl.Contracts;
+using BorderControl.Models;
+
+namespace BorderControl.Core
+{
+    public class Engine
+    {
+        public void Run()
+        {
+            List<IMemberOfSosiety> entered = new List<IMemberOfSosiety>();
+                       
+            string line = Console.ReadLine();
+
+            while ( line != "End")
+            {
+                string[] arrInput = line
+                    .Split(" ",StringSplitOptions.RemoveEmptyEntries)
+                    .ToArray();
+                               
+                if (arrInput.Count()==3)
+                {
+                    string name = arrInput[0];
+                    int age = int.Parse(arrInput[1]);
+                    string id = arrInput[2];
+
+                    Citizen citizen = new Citizen(name, age, id);
+
+                    entered.Add(citizen);
+                }
+                else if (arrInput.Count() ==2)
+                {
+                    string model = arrInput[0];
+                    string id = arrInput[1];
+
+                    Robot robot = new Robot(model, id);
+
+                    entered.Add(robot);
+                }
+                line = Console.ReadLine();
+            }
+
+            string idEnd = Console.ReadLine();
+            FindEnterendFake(entered, idEnd);
+            
+        }
+
+        private void FindEnterendFake(List<IMemberOfSosiety> entered, string idEnd)
+        {
+            foreach (var ent in entered)
+            {
+                int idEndLenght = idEnd.Length;
+                int entPosition = ent.Id.Length - idEndLenght;
+
+                string idEnterendEnd = ent.Id.Substring(entPosition, idEndLenght);
+                if (idEnterendEnd == idEnd)
+                {
+                    Console.WriteLine(ent.Id);
+                }
+            }
+        }        
+    }
+}
+
+namespace BorderControl.Contracts
+{
+    public interface IMemberOfSosiety
+    {
+        string Id { get; }
+    }
+}
+
+namespace BorderControl.Contracts
+{
+    public interface ICitizen
+    {
+        string Name { get; }
+        int Age { get; }
+    }
+}
+
+namespace BorderControl.Contracts
+{
+    public interface IRobot
+    {
+        string Model { get; }
+    }
+}
+
+using BorderControl.Contracts;
+
+namespace BorderControl.Models
+{
+    public class Citizen : IMemberOfSosiety, ICitizen
+    {
+        private string name;
+        private int age;
+        private string id;
+
+        public Citizen(string name, int age, string id)
+        {
+            this.Name = name;
+            this.Age = age;
+            this.Id = id;
+        }
+
+        public string Name
+        {
+            get
+            {
+                return this.name;
+            }
+            private set
+            {
+                this.name = value;
+            }
+        }
+
+        public int Age
+        {
+            get
+            {
+                return this.age;
+            }
+            private set
+            {
+                this.age = value;
+            }
+        }
+
+        public string Id
+        {
+            get
+            {
+                return this.id;
+            }
+            private set
+            {
+                this.id = value;
+            }
+        }
+    }
+}
+
+using BorderControl.Contracts;
+
+namespace BorderControl.Models
+{
+    public class Robot : IMemberOfSosiety, IRobot
+    {
+        private string model;
+        private string id;
+
+        public Robot(string model, string id)
+        {
+            this.Model = model;
+            this.Id = id;
+        }
+
+        public string Model
+        {
+            get
+            {
+                return this.model;
+            }
+            private set
+            {
+                this.model = value;
+            }
+        }
+
+        public string Id
+        {
+            get
+            {
+                return this.id;
+            }
+            private set
+            {
+                this.id = value;
+            }
+        }
+
+    }
+}
+
+
+Problem 6 BirthDay Celebration
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using BorderControl.Contracts;
+using BorderControl.Models;
+
+namespace BorderControl.Core
+{
+    public class Engine
+    {
+        public void Run()
+        {
+            List<IBirthDateable> birthDates = new List<IBirthDateable>();
+
+            string line = Console.ReadLine();
+
+            while (line != "End")
+            {
+                string[] arrInput = line
+                    .Split(" ")
+                    .ToArray();
+
+                if (arrInput[0] == "Citizen")
+                {
+                    string name = arrInput[1];
+                    int age = int.Parse(arrInput[2]);
+                    string id = arrInput[3];
+                    string birthDate = arrInput[4];
+
+                    Citizen citizen = new Citizen(name, age, id, birthDate);
+
+                    birthDates.Add(citizen);
+                }
+                else if (arrInput[0] == "Pet")
+                {
+                    string name = arrInput[1];
+                    string birthDate = arrInput[2];
+
+                    Pet pet = new Pet(name, birthDate);
+                    birthDates.Add(pet);
+                }
+                line = Console.ReadLine();
+            }
+
+            string year = Console.ReadLine();
+
+            if (birthDates.Count == 0)
+            {
+                Console.WriteLine("<empty output>");
+            }
+            else
+            {
+                FindBirthDate(birthDates, year);
+            }
+        }
+
+        private void FindBirthDate(List<IBirthDateable> birthDates, string year)
+        {
+            foreach (var dat in birthDates)
+            {
+                string[] tokens = dat.BirthDate
+                    .Split("/")
+                    .ToArray();
+
+                if (tokens[2] == year)
+                {
+                    Console.WriteLine(dat.BirthDate);
+                }
+            }
+        }                
+    }
+}
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace BorderControl.Contracts
+{
+    public interface IBirthDateable
+    {        
+        string BirthDate{get;}        
+    }
+}
+
+using BorderControl.Contracts;
+
+namespace BorderControl.Models
+{
+    public class Citizen : IBirthDateable, IMemberOfSosiety, ICitizen
+    {
+        private string name;
+        private int age;
+        private string id;
+        private string birthDate;
+
+        public Citizen(string name, int age, string id, string date)
+            
+        {
+            this.Name = name;
+            this.Age = age;
+            this.Id = id;
+            this.BirthDate = date;
+        }
+
+
+        public string Name
+        {
+            get
+            {
+                return this.name;
+            }
+            private set
+            {
+                this.name = value;
+            }
+        }
+
+        public int Age
+        {
+            get
+            {
+                return this.age;
+            }
+            private set
+            {
+                this.age = value;
+            }
+        }
+
+        public string Id
+        {
+            get
+            {
+                return this.id;
+            }
+            private set
+            {
+                this.id = value;
+            }
+        }
+
+        public string BirthDate
+        {
+            get
+            {
+                return this.birthDate;
+            }
+            private set
+            {
+                this.birthDate = value;
+            }
+        }
+    }
+}
+
+using BorderControl.Contracts;
+
+namespace BorderControl.Models
+{
+    public class Pet : IBirthDateable
+    {
+        private string name;
+        private string birthDate;
+
+        public Pet(string name, string date) 
+        {
+            this.Name = name;
+            this.BirthDate = date;
+        }
+
+        public string Name
+        {
+            get
+            {
+                return this.name;
+            }
+            private set
+            {
+                this.name = value;
+            }
+        }
+
+        public string BirthDate
+        {
+            get
+            {
+                return this.birthDate;
+            }
+            private set
+            {
+                this.birthDate = value;
+            }
+        }
+    }
+}
+
+Problem 7 Food Shortage
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using BorderControl.Contracts;
+using BorderControl.Models;
+
+namespace BorderControl.Core
+{
+    public class Engine
+    {
+        public void Run()
+        {
+            List<IBuyer> byers = new List<IBuyer>();
+
+            int people = int.Parse(Console.ReadLine());
+
+            for (int i = 0; i < people; i++)
+            {
+                
+                string[] arrInput = Console.ReadLine()
+                                    .Split(" ")
+                                    .ToArray();
+
+                if (arrInput.Count() == 4)
+                {
+                    string name = arrInput[0];
+                    int age = int.Parse(arrInput[1]);
+                    string id = arrInput[2];
+                    string birthDate = arrInput[3];
+
+                    Citizen citizen = new Citizen(name, age, id, birthDate);
+
+                    byers.Add(citizen);
+                }
+                else if (arrInput.Count() == 3)
+                {
+                    string name = arrInput[0];
+                    int age = int.Parse(arrInput[1]);
+                    string group = arrInput[2];
+
+                    Rebel rebel = new Rebel(name, age, group);
+
+                    byers.Add(rebel);
+                }
+            }
+
+            string man = Console.ReadLine();
+
+            while (man != "End")
+            {
+                foreach (var byer in byers)
+                {
+                    if (byer is Citizen)
+                    {
+                        if(((Citizen)byer).Name == man)
+                        {
+                            ((Citizen)byer).BuyFood();
+                        }
+                    }
+
+                    if (byer is Rebel)
+                    {
+                        if (((Rebel)byer).Name == man)
+                        {
+                            ((Rebel)byer).BuyFood();
+                        }
+                    }
+                }
+                
+                man = Console.ReadLine();
+            }
+
+            int sum = byers.Sum(x => x.Food);
+
+            Console.WriteLine(sum);           
+        }               
+    }
+}
+
+namespace BorderControl.Contracts
+{
+    public interface IBuyer
+    {
+        int Food { get; }
+        void BuyFood();
+    }
+}
+
+using BorderControl.Contracts;
+
+namespace BorderControl.Models
+{
+    public class Citizen : IBuyer, IBirthDateable, IMemberOfSosiety, ICitizen
+    {
+        private string name;
+        private int age;
+        private string id;
+        private string birthDate;
+        private int food;
+
+        public Citizen(string name, int age, string id, string date)
+            
+        {
+            this.Name = name;
+            this.Age = age;
+            this.Id = id;
+            this.BirthDate = date;
+            this.Food = 0;
+        }
+
+
+        public string Name
+        {
+            get
+            {
+                return this.name;
+            }
+            private set
+            {
+                this.name = value;
+            }
+        }
+
+        public int Age
+        {
+            get
+            {
+                return this.age;
+            }
+            private set
+            {
+                this.age = value;
+            }
+        }
+
+        public string Id
+        {
+            get
+            {
+                return this.id;
+            }
+            private set
+            {
+                this.id = value;
+            }
+        }
+
+        public string BirthDate
+        {
+            get
+            {
+                return this.birthDate;
+            }
+            private set
+            {
+                this.birthDate = value;
+            }
+        }
+
+        public int Food
+        {
+            get
+            {
+                return this.food;
+            }
+            private set
+            {
+                this.food = value;
+            }
+        }
+
+        public void BuyFood()
+        {
+            this.food += 10;
+        }
+    }
+}
+
+using System;
+
+using BorderControl.Contracts;
+
+namespace BorderControl.Models
+{
+    public class Rebel : IBuyer
+    {
+        private string name;
+        private int age;
+        private string group;
+        private int food;
+
+        public Rebel(string name, int age, string group)
+        {
+            this.Name = name;
+            this.Age = age;
+            this.Group = group;            
+            this.Food = 0;
+        }
+
+        public string Name
+        {
+            get
+            {
+                return this.name;
+            }
+            private set
+            {
+                this.name = value;
+            }
+        }
+
+        public int Age
+        {
+            get
+            {
+                return this.age;
+            }
+            private set
+            {
+                this.age = value;
+            }
+        }
+
+        public string Group
+        {
+            get
+            {
+                return this.group;
+            }
+            private set
+            {
+                this.group = value;
+            }
+        }
+
+        public int Food
+        {
+            get
+            {
+                return this.food;
+            }
+            private set
+            {
+                this.food = value;
+            }
+        }
+
+        public void BuyFood()
+        {
+            this.food += 5;
+        }
+    }
+}
+
+
+

@@ -1,0 +1,1043 @@
+Lab 1MathOperation 
+using System;
+
+namespace Operations
+{
+    public class StartUp
+    {
+        static void Main(string[] args)
+        {
+            MathOperations mo = new MathOperations();
+            Console.WriteLine(mo.Add(2, 3));
+            Console.WriteLine(mo.Add(2.2, 3.3, 5.5));
+            Console.WriteLine(mo.Add(2.2m, 3.3m, 4.4m));
+        }
+    }
+}
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Operations
+{
+    public class MathOperations
+    {
+        public int Add(int a, int b)
+        {
+            return a + b;
+        }
+
+        public double Add(double a, double b, double c)
+        {
+            return a + b + c;
+        }
+
+        public decimal Add(decimal a, decimal b, decimal c)
+        {
+            return a + b + c;
+        }
+    }
+}
+
+Lab2 Animals
+using Animals.Models;
+using System;
+
+namespace Animals
+{
+    public class StartUp
+    {
+        public static void Main(string[] args)
+        {
+            Animal cat = new Cat("Pesho", "Whiskas");
+            Animal dog = new Dog("Gosho", "Meat");
+
+            Console.WriteLine(cat.ExplainSelf());
+            Console.WriteLine(dog.ExplainSelf());
+        }
+    }
+}
+
+namespace Animals.Models
+{
+    public class Animal
+    {
+        public string Name { get; protected set; }
+
+        public string FavoriteFood { get; protected set; }
+
+        protected Animal(string name, string favoriteFood)
+        {
+            this.Name = name;
+            this.FavoriteFood = favoriteFood;
+        }
+
+        public virtual string ExplainSelf()
+        {
+            return $"I am {this.Name} and my fovourite food is {this.FavoriteFood}";
+        }
+    }
+}
+
+using System;
+
+namespace Animals.Models
+{
+    public class Cat: Animal
+    {
+        public Cat(string name, string favoriteFood)
+            :base(name,favoriteFood)
+        {
+        }
+
+        public override string ExplainSelf()
+        {
+            return base.ExplainSelf()
+                +Environment.NewLine
+                +"MEEOW";
+        }
+    }
+}
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Animals.Models
+{
+    public class Dog :Animal
+    {
+        public Dog(string name, string favoriteFood)
+            : base(name, favoriteFood)
+        {
+        }
+
+        public override string ExplainSelf()
+        {
+            return base.ExplainSelf()
+                + Environment.NewLine
+                + "DJAAF";
+        }
+    }
+}
+
+Problem 1 Vehicles
+using Problem1Vehicles.Models;
+using System;
+using System.Linq;
+
+namespace Problem1Vehicles
+{
+    public class StartUp
+    {
+        public static void Main(string[] args)
+        {
+            double[] inputCar = Console.ReadLine()
+                .Split(" ", StringSplitOptions.RemoveEmptyEntries)
+                .Skip(1)
+                .Select(double.Parse)
+                .ToArray();
+
+            Car car = new Car(inputCar[0], inputCar[1]);
+
+            double[] inputTruck = Console.ReadLine()
+                .Split(" ", StringSplitOptions.RemoveEmptyEntries)
+                .Skip(1)
+                .Select(double.Parse)
+                .ToArray();
+
+            Truck truck = new Truck(inputTruck[0], inputTruck[1]);
+
+            int nComand = int.Parse(Console.ReadLine());
+
+            for (int i = 0; i < nComand; i++)
+            {
+                string[] command = Console.ReadLine()
+                    .Split(" ", StringSplitOptions.RemoveEmptyEntries)
+                    .ToArray();
+                string action = command[0];
+                string vehicle = command[1];
+                double quantity = double.Parse(command[2]);
+                if (vehicle =="Car")
+                {
+                    if (action == "Drive")
+                    {
+                        car.Drive(quantity);
+                    }
+                    else
+                    {
+                        car.Refuel(quantity);
+                    }
+                }
+                else
+                {
+                    if (action == "Drive")
+                    {
+                        truck.Drive(quantity);
+                    }
+                    else
+                    {
+                        truck.Refuel(quantity);
+                    }
+                }
+            }
+
+            Console.WriteLine($"Car: {car.FuelQuantity:f2}");
+            Console.WriteLine($"Truck: {truck.FuelQuantity:f2}");
+        }
+    }
+}
+
+namespace Problem1Vehicles.Models
+{
+    public class Vehicles 
+    {
+        public double FuelQuantity { get; protected set; } 
+        public double Consumption { get; protected set; }
+
+        public Vehicles(double fuelQuantity, double consumption)
+        {
+            this.FuelQuantity = fuelQuantity;
+            this.Consumption = consumption;
+        }
+                
+        public virtual void Drive(double distance)
+        {
+
+        } 
+  
+        public virtual void Refuel(double liters)
+        {
+
+        }
+    }
+}
+
+using System;
+
+namespace Problem1Vehicles.Models
+{
+    public class Car :Vehicles
+    {
+        public Car(double fuelQuantity, double consumption)
+            :base(fuelQuantity,consumption)
+        {
+
+        }
+
+        public override void Drive(double distance)
+        {
+            double needFuel = (this.Consumption+0.9) *distance;
+            if (needFuel<=this.FuelQuantity)
+            {
+                Console.WriteLine($"Car travelled {distance} km");
+                this.FuelQuantity -= needFuel;
+            }
+            else
+            {
+                Console.WriteLine("Car needs refueling");
+            }
+
+        }
+        public override void Refuel(double liters)
+        {
+            this.FuelQuantity +=liters;
+        }
+    }
+}
+
+using System;
+
+namespace Problem1Vehicles.Models
+{
+    public class Truck:Vehicles
+    {
+        public Truck(double fuelQuantity, double consumption)
+            : base(fuelQuantity, consumption)
+        {
+
+        }
+
+        public override void Drive(double distance)
+        {
+            double needFuel = (this.Consumption + 1.6) * distance;
+            if (needFuel <= this.FuelQuantity)
+            {
+                Console.WriteLine($"Truck travelled {distance} km");
+                this.FuelQuantity -= needFuel;
+            }
+            else
+            {
+                Console.WriteLine("Truck needs refueling");
+            }
+
+        }
+        public override void Refuel(double liters)
+        {
+            this.FuelQuantity += (liters *0.95);
+        }
+
+    }
+}
+
+
+Problem2 Vehicles Extension
+using System;
+using System.Linq;
+
+using Problem2Vehicles.Models;
+
+namespace Problem2Vehicles
+{
+    public class StartUp
+    {
+        public static void Main(string[] args)
+        {
+            double[] inputCar = Console.ReadLine()
+                .Split(" ", StringSplitOptions.RemoveEmptyEntries)
+                .Skip(1)
+                .Select(double.Parse)
+                .ToArray();
+
+            Car car = new Car(inputCar[0], inputCar[1],inputCar[2]);
+
+            double[] inputTruck = Console.ReadLine()
+                .Split(" ", StringSplitOptions.RemoveEmptyEntries)
+                .Skip(1)
+                .Select(double.Parse)
+                .ToArray();
+
+            Truck truck = new Truck(inputTruck[0], inputTruck[1], inputTruck[2]);
+
+            double[] inputBus = Console.ReadLine()
+                .Split(" ", StringSplitOptions.RemoveEmptyEntries)
+                .Skip(1)
+                .Select(double.Parse)
+                .ToArray();
+
+            Bus bus = new Bus(inputBus[0], inputBus[1], inputBus[2]);
+
+            
+            int nComand = int.Parse(Console.ReadLine());
+
+            for (int i = 0; i < nComand; i++)
+            {
+                try
+                {
+
+                string[] command = Console.ReadLine()
+                    .Split(" ", StringSplitOptions.RemoveEmptyEntries)
+                    .ToArray();
+                string action = command[0];
+                string vehicle = command[1];
+                double quantity = double.Parse(command[2]);
+                if (vehicle =="Car")
+                {
+                    if (action == "Drive")
+                    {
+                        car.Drive(quantity);
+                    }
+                    else
+                    {
+                        car.Refuel(quantity);
+                    }
+                }
+                else if (vehicle == "Truck")                
+                {
+                    if (action == "Drive")
+                    {
+                        truck.Drive(quantity);
+                    }
+                    else
+                    {
+                        truck.Refuel(quantity);
+                    }
+                }
+                else
+                {
+                    if (action == "Drive")
+                    {
+                        bus.Drive(quantity);
+                    }
+                    else if (action == "DriveEmpty")
+                    {
+                        bus.DriveEmpty(quantity);
+                    }
+                    else
+                    {
+                        bus.Refuel(quantity);
+                    }
+                }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+
+            Console.WriteLine(car.ToString());
+            Console.WriteLine(truck.ToString());
+            Console.WriteLine(bus.ToString());
+
+        }
+    }
+}
+
+using System;
+
+namespace Problem2Vehicles.Models
+
+{
+    public class Vehicles 
+    {
+        protected double fuelQuantity;
+       
+
+        public double Consumption { get; protected set; }
+        public double TankCapacity { get; protected set; } 
+
+        public double FuelQuantity
+        {
+            get
+            {
+                return this.fuelQuantity;
+            }
+            protected set
+            {
+                
+                if (value<=this.TankCapacity)
+                {
+                    this.fuelQuantity = value;
+                }
+                else
+                {
+                    this.fuelQuantity = 0;                    
+                }
+            }
+         }
+
+
+        public Vehicles(double fuelQuantity, double consumption, double tankCapacity)
+        {
+            this.TankCapacity = tankCapacity;
+            this.FuelQuantity = fuelQuantity;
+            this.Consumption = consumption;
+        }
+                
+        public virtual void Drive(double distance)
+        {
+            double needFuel = (this.Consumption ) * distance;
+            if (needFuel <= this.fuelQuantity)
+            {
+                Console.WriteLine($"{this.GetType().Name} travelled {distance} km");
+                this.fuelQuantity -= needFuel;
+            }
+            else
+            {
+                Console.WriteLine($"{this.GetType().Name} needs refueling");
+            }
+        } 
+  
+        public virtual void Refuel(double liters)
+        {
+            if (liters <= 0)
+            {
+                throw new ArgumentException("Fuel must be a positive number");
+            }
+            else
+            {
+                double fuelAmount = this.fuelQuantity + liters;
+
+                if (fuelAmount < this.TankCapacity)
+                {
+                    this.fuelQuantity = fuelAmount;
+                }
+                else
+                {
+                     throw new ArgumentException($"Cannot fit {liters} fuel in the tank");
+                }
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"{this.GetType().Name}: {this.fuelQuantity:F2}";
+        }
+    }
+}
+
+namespace Problem2Vehicles.Models
+{
+    public class Car :Vehicles
+    {
+        private const double AirCondition = 0.9;
+        public Car(double fuelQuantity, double consumption, double tankCapacity)
+            :base(fuelQuantity,consumption,tankCapacity)
+        {
+            this.Consumption += AirCondition;
+        }                 
+    }
+}
+
+namespace Problem2Vehicles.Models
+{
+    public class Truck:Vehicles
+    {
+        private const double AirCondition = 1.6;
+        public Truck(double fuelQuantity, double consumption, double tankCapacity)
+            : base(fuelQuantity, consumption, tankCapacity)
+        {
+            this.Consumption += AirCondition;
+        }                
+    }
+}
+
+namespace Problem2Vehicles.Models
+{
+    public class Bus : Vehicles
+    {
+        private const double AirCondition = 1.4;
+        public Bus(double fuelQuantity, double consumption, double tankCapacity)
+            : base(fuelQuantity, consumption, tankCapacity)
+        {
+            this.Consumption += AirCondition;
+        }
+               
+        public void DriveEmpty(double distance)
+        {
+            this.Consumption -= AirCondition;
+             base.Drive(distance);
+        }
+    }
+}
+
+
+
+using Problem3WildFarm.Core;
+
+namespace Problem3WildFarm
+{
+    public class StartUp
+    {
+        static void Main(string[] args)
+        {
+            Engine engine = new Engine();
+            engine.Run();
+        }
+    }
+}
+
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Text;
+
+using Problem3WildFarm.Models;
+using Problem3WildFarm.Models.Animals;
+
+namespace Problem3WildFarm.Core
+{
+    public class Engine
+    {
+
+        List<Animal> animals;
+
+        public void Run()
+        {
+            animals = new List<Animal>();
+            string input = Console.ReadLine();
+
+            while (input != "End")
+            {
+                string[] animalParams = input
+                    .Split(" ")
+                    .ToArray();
+                string[] foodParams = Console.ReadLine()
+                    .Split(" ")
+                    .ToArray();
+
+                AnimalCreate(animalParams);
+
+                Vegetable vegetable;
+                Fruit fruit;
+                Meat meat;
+                Seeds seeds;
+
+                string food = foodParams[0];
+                int quantity = int.Parse(foodParams[1]);
+
+                animals.Last().ProduceSound();
+
+                switch (food)
+                {
+                    case "Vegetable":
+                        vegetable = new Vegetable(quantity);
+                        animals.Last().Eat((Food)vegetable);
+                        break;
+
+                    case "Fruit":
+                        fruit = new Fruit(quantity);
+                        animals.Last().Eat((Food)fruit);
+                        break;
+
+                    case "Meat":
+                        meat = new Meat(quantity);
+                        animals.Last().Eat((Food)meat);
+                        break;
+
+                    case "Seeds":
+                        seeds = new Seeds(quantity);
+                        animals.Last().Eat((Food)seeds);
+                        break;
+                }
+
+                input = Console.ReadLine();
+
+            }
+
+            foreach (var animal in animals)
+            {
+                Console.WriteLine(animal.ToString());
+            }
+        }
+
+
+        private void AnimalCreate(string[] animalParams)
+        {
+            Cat currentCat;
+            Tiger currentTiger;
+            Mouse currentMouse;
+            Dog currentDog;
+            Owl currentOwl;
+            Hen currentHen;
+
+            switch (animalParams[0])
+            {
+                case "Cat":
+                    string name = animalParams[1];
+                    double weight = double.Parse(animalParams[2]);
+                    string livingRegion = animalParams[3];
+                    string breed = animalParams[4];
+
+                    currentCat = new Cat(name, weight, livingRegion, breed);
+
+                    animals.Add(currentCat);
+                    break;
+                case "Tiger":
+                    name = animalParams[1];
+                    weight = double.Parse(animalParams[2]);
+                    livingRegion = animalParams[3];
+                    breed = animalParams[4];
+
+                    currentTiger = new Tiger(name, weight, livingRegion, breed);
+
+                    animals.Add(currentTiger);
+                    break;
+                case "Mouse":
+                    name = animalParams[1];
+                    weight = double.Parse(animalParams[2]);
+                    livingRegion = animalParams[3];
+
+                    currentMouse = new Mouse(name, weight, livingRegion);
+
+                    animals.Add(currentMouse);
+                    break;
+
+                case "Dog":
+                    name = animalParams[1];
+                    weight = double.Parse(animalParams[2]);
+                    livingRegion = animalParams[3];
+
+                    currentDog = new Dog(name, weight, livingRegion);
+
+                    animals.Add(currentDog);
+                    break;
+
+                case "Owl":
+                    name = animalParams[1];
+                    weight = double.Parse(animalParams[2]);
+                    int wingSize = int.Parse(animalParams[3]);
+
+                    currentOwl = new Owl(name, weight, wingSize);
+
+                    animals.Add(currentOwl);
+                    break;
+
+                case "Hen":
+                    name = animalParams[1];
+                    weight = double.Parse(animalParams[2]);
+                    wingSize = int.Parse(animalParams[3]);
+
+                    currentHen = new Hen(name, weight, wingSize);
+
+                    animals.Add(currentHen);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+}
+
+namespace Problem3WildFarm.Models
+{
+    public abstract class Food
+    {
+        public Food(int quantity)
+        {
+            this.Quantity = quantity;
+        }
+        public int Quantity { get; protected set; }
+    }
+}
+
+namespace Problem3WildFarm.Models
+{
+    public class Fruit : Food
+    {
+        public Fruit(int quantity)
+            :base(quantity)
+        {
+
+        }        
+    }
+}
+
+namespace Problem3WildFarm.Models
+{
+    public class Meat : Food
+    {
+        public Meat(int quantity)
+            : base(quantity)
+        {
+
+        }
+    }
+}
+
+namespace Problem3WildFarm.Models
+{
+    public class Seeds :Food
+    {
+        public Seeds(int quantity)
+            :base(quantity)        
+        {
+
+        }
+    }
+}
+
+namespace Problem3WildFarm.Models
+{
+    public class Vegetable :Food
+    {
+        public Vegetable(int quantity)
+            :base(quantity)
+        {
+
+        }
+    }
+}
+
+namespace Problem3WildFarm.Models
+{
+    public abstract class Animal
+    {
+        public Animal(string name, double weight)
+        {
+            this.Name = name;
+            this.Weight = weight;
+            this.FoodEaten = 0;
+        }
+
+        public string Name { get; protected set; }
+
+        public double Weight { get; protected set; }
+
+        public int FoodEaten { get; protected set; }
+
+        public abstract void ProduceSound();
+
+        public abstract void Eat(Food food);
+
+        public override string ToString()
+        {
+            return $"{this.GetType().Name} ";
+        }       
+    }
+}
+
+namespace Problem3WildFarm.Models
+{
+    public abstract class Bird : Animal
+    {
+        public Bird(string name, double weight, double wingSize)
+            :base(name,weight)
+        {
+            this.WingSize = wingSize;
+        }
+        public double WingSize { get; protected set; }
+
+        public override string ToString()
+        {
+            return base.ToString() + $"[{this.Name}, {this.WingSize}, {this.Weight}, {this.FoodEaten}]";;
+        }
+    }
+}
+
+using System;
+
+namespace Problem3WildFarm.Models
+{
+    public class Hen : Bird
+    {
+        public Hen(string name, double weight, double wingSize)
+            : base(name, weight, wingSize)
+        {
+
+        }
+
+        public override void Eat(Food food)
+        {
+                this.Weight += food.Quantity * 0.35;
+                this.FoodEaten += food.Quantity;            
+        }
+
+        public override void ProduceSound()
+        {
+            Console.WriteLine("Cluck");
+        }
+
+        public override string ToString()
+        {
+            return base.ToString();
+        }
+    }
+}
+
+using System;
+
+namespace Problem3WildFarm.Models
+{
+    public class Owl:Bird
+    {
+        public Owl(string name, double weight, double wingSize)
+            : base(name, weight, wingSize)
+        {
+
+        }
+
+        public override void Eat(Food food)
+        {
+            string nameFood = food.GetType().Name;
+            if (nameFood == "Meat")
+            {
+                this.Weight += food.Quantity * 0.25;
+                this.FoodEaten += food.Quantity;
+            }
+            else
+            {
+                Console.WriteLine($"Owl does not eat {nameFood}!");
+            }
+        }
+
+        public override void ProduceSound()
+        {
+            Console.WriteLine("Hoot Hoot");
+        }
+
+        public override string ToString()
+        {
+            return base.ToString() ;
+        }
+    }
+}
+
+
+namespace Problem3WildFarm.Models
+{
+    public abstract class Mammal : Animal
+    {
+        public Mammal(string name, double weight, string livingRegion)
+            : base(name, weight)
+        {
+            this.LivingRegion = livingRegion;
+        }
+
+        public string LivingRegion { get; protected set; }
+
+        public override string ToString()
+        {
+            return base.ToString();            
+        }
+    }
+}
+
+using System;
+
+namespace Problem3WildFarm.Models.Animals
+{
+    public class Dog : Mammal
+    {
+        public Dog(string name, double weight, string livingRegion)
+            : base(name, weight, livingRegion)
+        {
+        }
+
+        public override void Eat(Food food)
+        {
+            string nameFood = food.GetType().Name;
+            if (nameFood == "Meat")
+            {
+                this.Weight += food.Quantity * 0.4;
+                this.FoodEaten += food.Quantity;
+            }
+            else
+            {
+                Console.WriteLine($"Dog does not eat {nameFood}!");
+            }
+        }
+
+        public override void ProduceSound()
+        {
+            Console.WriteLine("Woof!");
+        }
+
+        public override string ToString()
+        {
+            return base.ToString() + $"[{this.Name}, {this.Weight}, {this.LivingRegion}, {this.FoodEaten}]"; ;
+        }
+    }
+}
+
+using System;
+
+
+namespace Problem3WildFarm.Models
+{
+    public class Mouse : Mammal
+    {
+
+        public Mouse(string name, double weight, string livingRegion)
+            : base(name, weight, livingRegion)
+        {
+        }
+
+        public override void Eat(Food food)
+        {
+            string nameFood = food.GetType().Name;
+            if (nameFood == "Vegetable"
+                || nameFood == "Fruit")
+            {
+                this.Weight += food.Quantity * 0.1;
+                this.FoodEaten += food.Quantity;
+            }
+            else
+            {
+                Console.WriteLine($"Mouse does not eat {nameFood}!");
+            }
+        }
+
+        public override void ProduceSound()
+        {
+            Console.WriteLine("Squeak");
+        }
+
+        public override string ToString()
+        {
+            return base.ToString() + $"[{this.Name}, {this.Weight}, {this.LivingRegion}, {this.FoodEaten}]";;
+        }
+    }
+}
+
+
+namespace Problem3WildFarm.Models
+{
+    public abstract class Feline: Mammal
+    {
+        public Feline(string name, double weight, string livingRegion, string breed)
+            :base(name, weight, livingRegion)
+        {
+            this.Breed = breed;
+        }
+        public string Breed { get; protected set; }
+
+        public override string ToString()
+        {
+            return base.ToString()+$"[{this.Name}, {this.Breed}, {this.Weight}, {this.LivingRegion}, {this.FoodEaten}]";
+        }
+    }
+}
+
+
+using System;
+
+namespace Problem3WildFarm.Models.Animals
+{
+    public class Tiger : Feline
+    {
+        public Tiger(string name, double weight, string livingRegion, string breed)
+            : base(name, weight, livingRegion, breed)
+        {
+        }
+
+        public override void Eat(Food food)
+        {
+            string nameFood = food.GetType().Name;
+            if (nameFood == "Meat")
+            {
+                this.Weight += food.Quantity * 1.0;
+                this.FoodEaten += food.Quantity;
+            }
+            else
+            {
+                Console.WriteLine($"Tiger does not eat {nameFood}!");
+            }
+        }
+
+        public override void ProduceSound()
+        {
+            Console.WriteLine("ROAR!!!");
+        }
+    }
+}
+
+using System;
+
+namespace Problem3WildFarm.Models.Animals
+{
+    public class Cat : Feline
+    {
+
+        public Cat(string name, double weight, string livingRegion, string breed)
+            :base (name, weight, livingRegion,breed)
+        {
+        }
+
+        public override void Eat(Food food)
+        {
+             string nameFood = food.GetType().Name;
+            if (nameFood == "Vegetable"
+                || nameFood =="Meat" )
+            {
+                this.Weight += food.Quantity * 0.3;
+                this.FoodEaten += food.Quantity;
+            }
+            else
+            {
+                Console.WriteLine($"Cat does not eat {nameFood}!");
+            }
+        }
+
+        public override void ProduceSound()
+        {
+            Console.WriteLine("Meow");
+        }
+    }
+}
+
+
+
+
+
